@@ -7,7 +7,123 @@ import frappe.client
 import frappe.handler
 import jwt
 from frappe import _
+import base64
 from passlib.context import CryptContext
+
+
+
+@frappe.whitelist(allow_guest=True)
+def login(**kwards):
+    lang = "ar"
+    if frappe.get_request_header("Language"):
+        lang = frappe.get_request_header("Language")
+
+    frappe.local.lang = lang
+    data = kwards
+
+
+    if 'udid' not in data:
+        frappe.local.response['status'] = {"message": _("Incorrect credentials"), "success": False,
+                                           "code": 422}
+        frappe.local.response['data'] = None
+        return
+
+    if 'email' not in data:
+        frappe.local.response['status'] = {"message": _("Email Required"), "success": False,
+                                           "code": 422}
+        frappe.local.response['data'] = None
+        return
+
+    if 'password' not in data:
+        frappe.local.response['status'] = {"message": _("Password Required"), "success": False,
+                                           "code": 422}
+        frappe.local.response['data'] = None
+        return
+
+    email = data['email']
+    udid = data['udid']
+    password = data['password']
+
+    fcm = None
+    if 'fcm' in data:
+        fcm = data['fcm']
+
+    log = frappe.get_doc({"doctype": "Api Log"})
+
+
+    password = password.encode("utf-8")
+    encoded = base64.b64encode(password)
+    encoded = str(encoded)
+    if not frappe.get_all("Customer", ['name'], filters={"email": email, "password": encoded}):
+        print(encoded)
+        frappe.local.response['http_status_code'] = 403
+        log.response = "Incorrect credentials"
+        log.request = "login"
+        log.flags.ignore_permissions = True
+        log.insert()
+        frappe.db.commit();
+        frappe.local.response['status'] = {"message": _("Incorrect credentials1"), "success": False,
+                                           "code": 403}
+        frappe.local.response['data'] = None
+        return
+
+    customer_list = frappe.get_all("Customer", ['name'], filters={"email": email, "password": encoded})
+    customer_doc = frappe.get_doc("Customer", customer_list[0].name)
+    full_name = customer_doc.customer_name
+    name = customer_doc.name
+
+    secret_key = "Me System";
+    issuedat_claim = time.time()
+    notbefore_claim = issuedat_claim;
+    expire_claim = issuedat_claim + (60 * 60 * 3 * 24 * 5);
+    token = {
+        "iat": issuedat_claim,
+        "nbf": notbefore_claim,
+        "exp": expire_claim,
+        "data": {
+            "full_name": full_name,
+            "name": name
+        }};
+    token = jwt.encode(token, secret_key, algorithm="HS256")
+    token = token.decode('utf-8')
+    customer_devices = frappe.get_all("User Device", ['name'], filters={"udid": udid, "docstatus": ['<', 2]})
+    customer_device = None
+    if customer_devices:
+        customer_device = frappe.get_doc("User Device", customer_devices[0].name)
+    else:
+        customer_device = frappe.get_doc({"doctype": "User Device"})
+
+    customer_device.user_type = "Customer"
+    customer_device.user = customer_doc.name
+    customer_device.udid = udid
+    customer_device.fcm = fcm
+    customer_device.access_token = token
+    customer_device.enabled = 1
+    customer_device.flags.ignore_permissions = True
+    customer_device.save()
+
+    ret_Customer = user(customer_doc.name);
+    msg = _("Login Success")
+
+    log.response = msg
+    log.token = None
+    log.Customer = customer_doc.name
+    log.request = "login"
+    log.flags.ignore_permissions = True
+    log.insert()
+
+    frappe.db.commit();
+
+    frappe.local.response['status'] = {
+        "message": _("Login Success"),
+        "code": 1,
+        "success": True
+    }
+
+    frappe.local.response['data'] = {
+        "Customer": ret_Customer,
+        "access_token": token
+    }
 
 
 @frappe.whitelist(allow_guest=True)
@@ -85,23 +201,14 @@ def register(**kwards):
         frappe.local.response['status'] = {"message": _("This user is already exist"), "success": False, "code": 422}
         frappe.local.response['data'] = None
         return
-    passlibctx = CryptContext(
-        schemes=[
-            "pbkdf2_sha256",
-            "argon2",
-            "frappe_legacy",
-        ],
-        deprecated=[
-            "frappe_legacy",
-        ],
-    )
-    hashPwd = passlibctx.hash(password)
+    password = password.encode("utf-8")
+    encoded = base64.b64encode(password)
 
     customer_doc = frappe.get_doc({"doctype": "Customer",
                                    "mobile_number": mobile,
                                    "email": email,
                                    "customer_name": full_name,
-                                   "password":hashPwd,
+                                   "password":str(encoded),
                                    "city":city,
                                    "customer_type":"Individual",
                                    "gender":gender
@@ -159,8 +266,6 @@ def register(**kwards):
         "Customer": ret_Customer,
         "access_token": token
     }
-
-
 
 @frappe.whitelist(allow_guest=True)
 def check_token():
