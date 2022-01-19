@@ -267,6 +267,55 @@ def register(**kwards):
         "access_token": token
     }
 
+
+@frappe.whitelist(allow_guest=True)
+def get_profile(**kwards):
+    lang = "ar"
+    if frappe.get_request_header("Language"):
+        lang = frappe.get_request_header("Language")
+    frappe.local.lang = lang
+
+    check = check_token()
+    user1 = None
+    if check and "user" in check:
+        user1 = check['user']
+
+    if not user1 or user1.customer_type != "Individual":
+        frappe.local.response['http_status_code'] = 403
+        frappe.local.response['status'] = {"message": _("Not Authorized"), "success": False, "code": 403}
+        frappe.local.response['data'] = None
+        return
+
+    log = frappe.get_doc({"doctype": "Api Log"})
+
+
+    msg = _("Profile info")
+
+    log.response = msg
+    log.token = None
+
+    log.request = "profile info"
+    log.flags.ignore_permissions = True
+    log.insert()
+    frappe.db.commit();
+
+    frappe.local.response['status'] = {
+        "message": msg,
+        "code": 1,
+        "success": True
+    }
+
+    frappe.local.response['data'] = {
+        "id":user1.name,
+        "full_name":user1.customer_name,
+        "email":user1.email,
+        "mobile_number":user1.mobile_number,
+        "city":user1.city
+
+
+    }
+
+
 @frappe.whitelist(allow_guest=True)
 def check_token():
     request = frappe.request
