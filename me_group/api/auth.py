@@ -267,6 +267,90 @@ def register(**kwards):
         "access_token": token
     }
 
+@frappe.whitelist(allow_guest=True)
+def change_password(**kwards):
+    lang = "ar"
+    if frappe.get_request_header("Language"):
+        lang = frappe.get_request_header("Language")
+    frappe.local.lang = lang
+    data = kwards
+
+    check = check_token()
+    user1 = None
+
+    old_password = None
+    new_password = None
+    if 'old_password' in data:
+        old_password = data['old_password']
+    else:
+        frappe.local.response['status'] = {"message": _("Old password required"), "success": False, "code": 403}
+        frappe.local.response['data'] = None
+        return
+
+    if 'new_password' in data:
+        new_password = data['new_password']
+    else:
+        frappe.local.response['status'] = {"message": _("New password required"), "success": False, "code": 403}
+        frappe.local.response['data'] = None
+        return
+
+
+    if check and "user" in check:
+        user1 = check['user']
+
+    if not user1 or user1.customer_type != "Individual":
+        frappe.local.response['http_status_code'] = 403
+        frappe.local.response['status'] = {"message": _("Not Authorized"), "success": False, "code": 403}
+        frappe.local.response['data'] = None
+        return
+
+
+    password = old_password.encode("utf-8")
+    old_encoded = base64.b64encode(password)
+    password = new_password.encode("utf-8")
+    new_encoded = base64.b64encode(password)
+    print(user1.password)
+    print(old_encoded)
+    if str(old_encoded) != user1.password:
+        frappe.local.response['status'] = {"message": _("Old password not correct"), "success": False, "code": 403}
+        frappe.local.response['data'] = None
+        return
+
+    customer = frappe.get_doc("Customer",user1.name)
+    customer.set("password",str(new_encoded))
+    customer.save(ignore_permissions=True)
+    frappe.db.commit()
+
+    name = customer.name
+    secret_key = "Me System";
+    issuedat_claim = time.time();
+    notbefore_claim = issuedat_claim;
+    expire_claim = issuedat_claim + (60 * 60 * 3 * 24 * 5);
+    token = {
+        "iat": issuedat_claim,
+        "nbf": notbefore_claim,
+        "exp": expire_claim,
+        "data": {
+            "full_name": customer.customer_name,
+            "name": name
+        }};
+    token = jwt.encode(token, secret_key, algorithm="HS256")
+    token = token.decode('utf-8')
+
+    current_token = frappe.get_request_header("Authorization").replace('Bearer ', '');
+    customer_devices = frappe.get_all("User Device", ['name'], filters={"access_token": current_token, "docstatus": ['<', 2]})
+    customer_device = frappe.get_doc("User Device",customer_devices[0].name)
+    customer_device.access_token = token
+    customer_device.save(ignore_permissions=True)
+    frappe.db.commit()
+    frappe.local.response['status'] = {"message": _("Password reset successfully"), "success": True, "code": 200}
+    frappe.local.response['data'] = {
+        "data":None,
+        "access_token":token
+    }
+    return
+
+
 
 @frappe.whitelist(allow_guest=True)
 def get_profile(**kwards):
