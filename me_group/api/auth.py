@@ -401,6 +401,98 @@ def get_profile(**kwards):
 
 
 @frappe.whitelist(allow_guest=True)
+def update_profile(**kwards):
+    lang = "ar"
+    if frappe.get_request_header("Language"):
+        lang = frappe.get_request_header("Language")
+    frappe.local.lang = lang
+
+    check = check_token()
+    user1 = None
+    data = kwards
+
+    if check and "user" in check:
+        user1 = check['user']
+
+    mobile = None
+    email = None
+    full_name = None
+    city = None
+
+    if "email" in data:
+        email = data['email']
+
+
+    if "mobile_number" in data:
+        mobile = data['mobile_number']
+
+    if "city" in data:
+        city = data['city']
+    else:
+        city = user1.city
+
+    if "full_name" in data:
+        full_name = data['full_name']
+    else :
+        full_name = user1.customer_name
+
+
+    if not user1 or user1.customer_type != "Individual":
+        frappe.local.response['http_status_code'] = 403
+        frappe.local.response['status'] = {"message": _("Not Authorized"), "success": False, "code": 403}
+        frappe.local.response['data'] = None
+        return
+
+    log = frappe.get_doc({"doctype": "Api Log"})
+
+
+    if email is not None and mobile is not None:
+        if(len(frappe.get_all("Customer",filters={"email":data['email'],"mobile_number":mobile})) > 0):
+            if email != user1.email:
+                if mobile != user1.mobile_number:
+                    frappe.local.response['status'] = {"message": _("Email or Mobile is already exists"), "success": False, "code": 403}
+                    frappe.local.response['data'] = None
+                    return
+
+    if email is None:
+        email = user1.email
+    if mobile is None:
+        mobile = user1.mobile_number
+
+    customer = frappe.get_doc("Customer",user1.name)
+    customer.email = email
+    customer.mobile_number = mobile
+    customer.customer_name = full_name
+    customer.city = city
+    customer.save(ignore_permissions = True)
+    frappe.db.commit()
+
+    msg = _("Profile edit")
+
+    log.response = msg
+    log.token = None
+
+    log.request = "profile updated successful"
+    log.flags.ignore_permissions = True
+    log.insert()
+    frappe.db.commit();
+
+    frappe.local.response['status'] = {
+        "message": msg,
+        "code": 1,
+        "success": True
+    }
+
+    frappe.local.response['data'] = {
+        "id":user1.name,
+        "full_name":full_name,
+        "email":email,
+        "mobile_number":mobile,
+        "city":city
+    }
+
+
+@frappe.whitelist(allow_guest=True)
 def check_token():
     request = frappe.request
     secret_key = "Me System";
