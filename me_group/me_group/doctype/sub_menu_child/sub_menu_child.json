@@ -1,0 +1,37 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-01-22 13:13:24.341245",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "sub_name",
+  "enabled"
+ ],
+ "fields": [
+  {
+   "fieldname": "sub_name",
+   "fieldtype": "Data",
+   "label": "\u0627\u0644\u0627\u0633\u0645"
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "\u0646\u0634\u0637"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2022-01-22 14:34:21.676501",
+ "modified_by": "Administrator",
+ "module": "Me Group",
+ "name": "Sub Menu Child",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

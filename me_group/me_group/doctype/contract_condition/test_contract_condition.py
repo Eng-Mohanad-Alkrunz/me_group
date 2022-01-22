@@ -4,5 +4,5 @@
 # import frappe
 import unittest
 
-class TestTestDoc(unittest.TestCase):
+class TestContractCondition(unittest.TestCase):
 	pass

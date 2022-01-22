@@ -1,26 +1,35 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2022-01-19 20:25:51.012477",
+ "autoname": "format:{###}-CC",
+ "creation": "2022-01-22 14:09:55.271137",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "test"
+  "enabled",
+  "condition"
  ],
  "fields": [
   {
-   "fieldname": "test",
-   "fieldtype": "Data",
-   "label": "Test"
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "\u0646\u0634\u0637"
+  },
+  {
+   "fieldname": "condition",
+   "fieldtype": "Small Text",
+   "label": "\u0627\u0644\u0634\u0631\u0637",
+   "translatable": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-01-19 20:25:51.012477",
+ "modified": "2022-01-22 14:32:24.117691",
  "modified_by": "Administrator",
  "module": "Me Group",
- "name": "TestDoc",
+ "name": "Contract Condition",
  "owner": "Administrator",
  "permissions": [
   {

@@ -1,0 +1,65 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{##}-CM-construction",
+ "creation": "2022-01-22 13:11:20.941886",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "construction",
+  "image",
+  "enabled",
+  "sub_menu"
+ ],
+ "fields": [
+  {
+   "fieldname": "construction",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "\u0627\u0644\u0627\u0633\u0645 ",
+   "reqd": 1
+  },
+  {
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "label": "\u0627\u0644\u0635\u0648\u0631\u0629"
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "\u0646\u0634\u0637"
+  },
+  {
+   "fieldname": "sub_menu",
+   "fieldtype": "Table",
+   "label": "\u0627\u0644\u0642\u0627\u0626\u0645\u0629 \u0627\u0644\u0641\u0631\u0639\u064a\u0629",
+   "options": "Sub Menu Child"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2022-01-22 14:33:26.531175",
+ "modified_by": "Administrator",
+ "module": "Me Group",
+ "name": "Construction",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

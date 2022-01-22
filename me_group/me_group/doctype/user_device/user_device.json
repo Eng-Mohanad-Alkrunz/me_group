@@ -18,7 +18,7 @@
    "fieldname": "user_type",
    "fieldtype": "Select",
    "label": "User Type",
-   "options": "User\nCustomer\nDriver"
+   "options": "User\nCustomer\nSupervisor"
   },
   {
    "fieldname": "user",
@@ -50,7 +50,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-01-19 20:38:22.917694",
+ "modified": "2022-01-22 12:54:55.661348",
  "modified_by": "Administrator",
  "module": "Me Group",
  "name": "User Device",
