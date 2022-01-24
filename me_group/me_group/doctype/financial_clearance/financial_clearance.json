@@ -1,0 +1,85 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{####}-FC-{##}",
+ "creation": "2022-01-24 19:29:38.887458",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "contract_application",
+  "customer",
+  "id_no",
+  "cb00",
+  "agreement_essay",
+  "agreement"
+ ],
+ "fields": [
+  {
+   "fetch_from": "contract_application.customer",
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "\u0627\u0644\u0632\u0628\u0648\u0646",
+   "options": "Customer",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "contract_application.id_no",
+   "fieldname": "id_no",
+   "fieldtype": "Data",
+   "label": "\u0631\u0642\u0645 \u0628\u0637\u0627\u0642\u0629 \u0627\u0644\u0623\u062d\u0648\u0627\u0644",
+   "read_only": 1
+  },
+  {
+   "fieldname": "contract_application",
+   "fieldtype": "Link",
+   "label": "\u0631\u0642\u0645 \u0627\u0644\u0639\u0642\u062f",
+   "options": "Contract Application",
+   "reqd": 1,
+   "set_only_once": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "cb00",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "agreement_essay",
+   "fieldtype": "Small Text",
+   "label": "\u0627\u0644\u0625\u0642\u0631\u0627\u0631",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "agreement",
+   "fieldtype": "Check",
+   "label": "\u0645\u0648\u0627\u0641\u0642"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2022-01-24 20:10:38.361930",
+ "modified_by": "Administrator",
+ "module": "Me Group",
+ "name": "Financial Clearance",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

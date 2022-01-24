@@ -11,7 +11,6 @@ frappe.ui.form.on('Contract Application', {
 	    console.log(current_status);
 	    frm.set_df_property("sb02", "hidden", 1);
 	    }else{
-	    console.log(current_status);
 	    frm.set_df_property("sb02", "hidden", 0);
 	    }
 	    if (current_status == "final approved"){

@@ -21,7 +21,7 @@
    "fieldname": "base_select",
    "fieldtype": "Select",
    "label": "\u0627\u0644\u062d\u0627\u0644\u0629",
-   "options": "\u0627\u0644\u0645\u0627\u0644\u0643\n\u0627\u0644\u0645\u0642\u0627\u0648\u0644"
+   "options": "owner\ncontractor"
   },
   {
    "fetch_from": "condition.condition",
@@ -34,7 +34,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2022-01-22 15:28:02.807636",
+ "modified": "2022-01-24 23:34:53.083337",
  "modified_by": "Administrator",
  "module": "Me Group",
  "name": "Condition Child",
