@@ -14,7 +14,7 @@ from frappe.utils import add_days, cint
 
 
 @frappe.whitelist(allow_guest=True)
-def create_work(**kwards):
+def create_invoice(**kwards):
     lang = "ar"
     if frappe.get_request_header("Language"):
         lang = frappe.get_request_header("Language")
@@ -24,7 +24,7 @@ def create_work(**kwards):
 
     check = check_token()
     user1 = None
-    work_name = None
+    invoice_name = None
     contract = None
     date = None
     if check and "user" in check:
@@ -37,13 +37,12 @@ def create_work(**kwards):
         return
 
 
-    if "work_name" in data:
-        work_name = data['work_name']
+    if "invoice_name" in data:
+        invoice_name = data['invoice_name']
     else:
-        frappe.local.response['status'] = {"message": _("Work name required"), "success": False, "code": 403}
+        frappe.local.response['status'] = {"message": _("Invoice name required"), "success": False, "code": 403}
         frappe.local.response['data'] = None
         return
-
 
     if "contract" in data:
         contract = data['contract']
@@ -55,21 +54,22 @@ def create_work(**kwards):
     if "date" in data:
         date = data['date']
 
-    new_work = frappe.new_doc("Work Application")
-    new_work.set("work_name",work_name)
-    new_work.set("supervisor", user1.name)
+    new_invoice = frappe.new_doc("Invoice Application")
+    new_invoice.set("invoice_name",invoice_name)
+    new_invoice.set("supervisor", user1.name)
+    new_invoice.set("contract", contract)
     if date is not None:
-        new_work.set("date", date)
-    new_work.set("contract", contract)
-    new_work.set("images", updatefile(data))
-    new_work.save(ignore_permissions=True)
+        new_invoice.set("date", date)
+    res = uploadfile()
+    new_invoice.set("image", res.file_url)
+    new_invoice.save(ignore_permissions=True)
     frappe.db.commit()
-    frappe.local.response['status'] = {"message": _("Work created successfully"), "success": True, "code": 200}
+    frappe.local.response['status'] = {"message": _("Invoice created successfully"), "success": True, "code": 200}
     frappe.local.response['data'] = None
 
 
 @frappe.whitelist(allow_guest=True)
-def get_works(**kwards):
+def get_invoices(**kwards):
     lang = "ar"
     if frappe.get_request_header("Language"):
         lang = frappe.get_request_header("Language")
@@ -97,81 +97,25 @@ def get_works(**kwards):
         return
 
     result = []
-    works = frappe.get_all("Work Application",fields =["*"],filters= {"contract":contract})
-    for work in works:
-        work_doc = frappe.get_doc("Work Application",work.name)
-        images = []
-        if work_doc.images is not None:
-            for image in work_doc.images:
-                images.append({
-                    "image" : image.images
-                })
+    invoices = frappe.get_all("Invoice Application",fields =["*"],filters= {"contract":contract})
+    for invoice in invoices:
+        invoice_doc = frappe.get_doc("Invoice Application",invoice.name)
+        status = _("Pending")
+        if invoice_doc.docstatus == 1:
+            status = _("Submitted")
+        else:
+            status = _("Pending")
         result.append({
-            "id":work.name,
-            "contract":work.contract,
-            "date":work.date,
-            "status" :_(work.status),
-            "images" : images
+            "id":invoice_doc.name,
+            "contract":invoice_doc.contract,
+            "date":invoice_doc.date,
+            "status" :status,
+            "image" : invoice_doc.image
         })
 
 
-    frappe.local.response['status'] = {"message": _("Works list "), "success": True, "code": 200}
+    frappe.local.response['status'] = {"message": _("Invoices list"), "success": True, "code": 200}
     frappe.local.response['data'] = result
-
-
-@frappe.whitelist(allow_guest=True)
-def get_done_works(**kwards):
-    lang = "ar"
-    if frappe.get_request_header("Language"):
-        lang = frappe.get_request_header("Language")
-
-    frappe.local.lang = lang
-    data = kwards
-
-    check = check_token()
-    user1 = None
-    contract = None
-    if check and "user" in check:
-        user1 = check['user']
-
-    if not user1:
-        frappe.local.response['http_status_code'] = 403
-        frappe.local.response['status'] = {"message": _("Not Authorized"), "success": False, "code": 403}
-        frappe.local.response['data'] = None
-        return
-
-    if "contract" in data:
-        contract = data['contract']
-    else:
-        frappe.local.response['status'] = {"message": _("contract id required"), "success": False, "code": 403}
-        frappe.local.response['data'] = None
-        return
-
-    contract_doc = frappe.get_doc("Contract Application",contract)
-    if contract_doc.contract_status == "end of the contract":
-
-        result = []
-        works = frappe.get_all("Work Application",fields =["*"],filters= {"contract":contract})
-        for work in works :
-            images = []
-            for image in work.images:
-                images.append({
-                    "image" : image.images
-                })
-            result.append({
-                "id":work.name,
-                "contract":work.contract,
-                "date":work.date,
-                "status" :_(work.status),
-                "images" : images
-            })
-
-
-        frappe.local.response['status'] = {"message": _("Work created successfully"), "success": True, "code": 200}
-        frappe.local.response['data'] = result
-    else :
-        frappe.local.response['status'] = {"message": _("Contract Not completed yet "), "success": True, "code": 200}
-        frappe.local.response['data'] = None
 
 @frappe.whitelist(allow_guest=True)
 def check_token():
@@ -247,40 +191,38 @@ def check_token():
         return
 
 @frappe.whitelist(allow_guest=True)
-def updatefile(data):
-    gallery =[]
+def uploadfile():
     user = frappe.get_doc("User", frappe.session.user)
-    i = 0
-    for i in range(len(frappe.request.files)):
+    print(user)
+    file = frappe.request.files['image']
+    is_private = 0
+    fieldname = ""
+    folder = 'Home'
+    filename = ""
+    content = None
 
-        file = frappe.request.files['image['+str(i)+']']
-
-        is_private = 0
-        fieldname = ""
-        folder = 'Home'
-        filename = ""
-        content = None
-
+    if file:
         content = file.stream.read()
         filename = file.filename
         content_type = guess_type(filename)[0]
-        frappe.local.uploaded_file = content
-        frappe.local.uploaded_filename = filename
-        ret = frappe.get_doc({
-            "doctype": "File",
-            "attached_to_doctype": "",
-            "attached_to_name": "",
-            "attached_to_field": "",
-            "folder": folder,
-            "file_name": filename,
-            "file_url": "",
-            "is_private": cint(is_private),
-            "content": content
-        })
-        ret.save(ignore_permissions=True)
+    frappe.local.uploaded_file = content
+    frappe.local.uploaded_filename = filename
 
-        gallery.append({
-            'images':ret.file_url,
-        })
 
-    return gallery
+    # print(frappe.db.sql(f"""INSERT into `tabFile` (folder,file_name,is_private,content)
+    #                 Values = ('{folder}' , '{filename}' , '{cint(is_private)}' , '{content}' )"""))
+
+    ret = frappe.get_doc({
+        "doctype": "File",
+        "attached_to_doctype": "",
+        "attached_to_name": "",
+        "attached_to_field": "",
+        "folder": folder,
+        "file_name": filename,
+        "file_url": "",
+        "is_private": cint(is_private),
+        "content": content
+    })
+    print(str(ret) + "TEds")
+    ret.save(ignore_permissions=True)
+    return ret
