@@ -1,0 +1,95 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{######}-WA",
+ "creation": "2022-01-26 15:25:30.972101",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "work_name",
+  "contract",
+  "date",
+  "status",
+  "cb01",
+  "supervisor",
+  "images",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "work_name",
+   "fieldtype": "Data",
+   "label": "\u0627\u0633\u0645 \u0627\u0644\u0639\u0645\u0644"
+  },
+  {
+   "fieldname": "contract",
+   "fieldtype": "Link",
+   "label": "\u0627\u0644\u0639\u0642\u062f",
+   "options": "Contract Application"
+  },
+  {
+   "default": "Today",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "\u0627\u0644\u062a\u0627\u0631\u064a\u062e"
+  },
+  {
+   "fieldname": "supervisor",
+   "fieldtype": "Link",
+   "label": "\u0627\u0633\u0645 \u0627\u0644\u0645\u0634\u0631\u0641",
+   "options": "Supervisor"
+  },
+  {
+   "fieldname": "images",
+   "fieldtype": "Table",
+   "label": "\u0635\u0648\u0631 \u0627\u0644\u0639\u0645\u0644",
+   "options": "Gallery Child"
+  },
+  {
+   "fieldname": "cb01",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "\u0627\u0644\u062d\u0627\u0644\u0629",
+   "options": "pending\napproved\ncancelled"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Work Application",
+   "print_hide": 1,
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2022-01-26 16:01:11.313901",
+ "modified_by": "Administrator",
+ "module": "Me Group",
+ "name": "Work Application",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

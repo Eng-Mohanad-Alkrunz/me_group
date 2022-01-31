@@ -105,7 +105,7 @@ def create_contract(**kwards):
         id_image=id_image,
         license_image=license_image,
         instrument_image=instrument_image,
-        diagrams=diagrams,
+        diagrams=updatefile(data),
         engineer_contact=engineer_contact,
         instrument_no=instrument_no,
         docstatus=0,
@@ -541,9 +541,9 @@ def uploadfile(param):
     return ret
 
 @frappe.whitelist(allow_guest=True)
-def updatefile():
+def updatefile(data):
     gallery = []
-
+    user = frappe.get_doc("User", frappe.session.user)
     i = 0
     for i in range(len(frappe.request.files)):
         file = frappe.request.files['image['+str(i)+']']
