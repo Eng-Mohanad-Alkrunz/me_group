@@ -55,7 +55,6 @@ def login(**kwards):
     encoded = base64.b64encode(password)
     encoded = str(encoded)
     if not frappe.get_all("Customer", ['name'], filters={"email": email, "password": encoded}):
-        print(encoded)
         frappe.local.response['http_status_code'] = 403
         log.response = "Incorrect credentials"
         log.request = "login"
@@ -211,7 +210,8 @@ def register(**kwards):
                                    "password":str(encoded),
                                    "city":city,
                                    "customer_type":"Individual",
-                                   "gender":gender
+                                   "customer_group":"Individual",
+                                   "territory":"Rest Of The World"
                                    }).save(ignore_permissions=True)
     frappe.db.commit()
     cus_list = frappe.get_all("Customer", ['name'], filters={"mobile_number": mobile, "email": email})
