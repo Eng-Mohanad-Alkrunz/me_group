@@ -83,9 +83,7 @@ def login(**kwards):
             "full_name": full_name,
             "name": name
         }}
-    token = jwt.encode(token, secret_key, algorithm="HS256")
-    print(type(token))
-    token = token.decode("utf-8")
+    token = jwt.encode(token, secret_key, algorithm="HS256").decode("utf-8")
     customer_devices = frappe.get_all("User Device", ['name'], filters={"udid": udid, "docstatus": ['<', 2]})
     customer_device = None
     if customer_devices:
@@ -229,8 +227,8 @@ def register(**kwards):
             "full_name": full_name,
             "name": name
         }}
-    token = jwt.encode(token, secret_key, algorithm="HS256")
-    token = token.decode("utf-8")
+    token = jwt.encode(token, secret_key, algorithm="HS256").decode("utf-8")
+    # token = token.decode("utf-8")
 
     customer_devices = frappe.get_all("User Device", ['name'], filters={"udid": udid, "docstatus": ['<', 2]})
     customer_device = None
@@ -335,8 +333,8 @@ def change_password(**kwards):
             "full_name": customer.customer_name,
             "name": name
         }}
-    token = jwt.encode(token, secret_key, algorithm="HS256")
-    token = token.decode("utf-8")
+    token = jwt.encode(token, secret_key, algorithm="HS256").decode("utf-8")
+    # token = token.decode("utf-8")
 
     current_token = frappe.get_request_header("Authorization").replace('Bearer ', '')
     customer_devices = frappe.get_all("User Device", ['name'], filters={"access_token": current_token, "docstatus": ['<', 2]})
