@@ -60,7 +60,7 @@ def login(**kwards):
         log.request = "login"
         log.flags.ignore_permissions = True
         log.insert()
-        frappe.db.commit();
+        frappe.db.commit()
         frappe.local.response['status'] = {"message": _("Incorrect credentials1"), "success": False,
                                            "code": 403}
         frappe.local.response['data'] = None
@@ -71,10 +71,10 @@ def login(**kwards):
     full_name = customer_doc.customer_name
     name = customer_doc.name
 
-    secret_key = "Me System";
+    secret_key = "Me System"
     issuedat_claim = time.time()
-    notbefore_claim = issuedat_claim;
-    expire_claim = issuedat_claim + (60 * 60 * 3 * 24 * 5);
+    notbefore_claim = issuedat_claim
+    expire_claim = issuedat_claim + (60 * 60 * 3 * 24 * 5)
     token = {
         "iat": issuedat_claim,
         "nbf": notbefore_claim,
@@ -82,9 +82,10 @@ def login(**kwards):
         "data": {
             "full_name": full_name,
             "name": name
-        }};
+        }}
     token = jwt.encode(token, secret_key, algorithm="HS256")
-    token = token.decode('utf-8')
+    print(type(token))
+    token = token.decode("utf-8")
     customer_devices = frappe.get_all("User Device", ['name'], filters={"udid": udid, "docstatus": ['<', 2]})
     customer_device = None
     if customer_devices:
@@ -101,7 +102,7 @@ def login(**kwards):
     customer_device.flags.ignore_permissions = True
     customer_device.save()
 
-    ret_Customer = user(customer_doc.name);
+    ret_Customer = user(customer_doc.name)
     msg = _("Login Success")
 
     log.response = msg
@@ -111,7 +112,7 @@ def login(**kwards):
     log.flags.ignore_permissions = True
     log.insert()
 
-    frappe.db.commit();
+    frappe.db.commit()
 
     frappe.local.response['status'] = {
         "message": _("Login Success"),
@@ -216,10 +217,10 @@ def register(**kwards):
     frappe.db.commit()
     cus_list = frappe.get_all("Customer", ['name'], filters={"mobile_number": mobile, "email": email})
     name = cus_list[0].name
-    secret_key = "Me System";
-    issuedat_claim = time.time();
-    notbefore_claim = issuedat_claim;
-    expire_claim = issuedat_claim + (60 * 60 * 3 * 24 * 5);
+    secret_key = "Me System"
+    issuedat_claim = time.time()
+    notbefore_claim = issuedat_claim
+    expire_claim = issuedat_claim + (60 * 60 * 3 * 24 * 5)
     token = {
         "iat": issuedat_claim,
         "nbf": notbefore_claim,
@@ -227,9 +228,9 @@ def register(**kwards):
         "data": {
             "full_name": full_name,
             "name": name
-        }};
+        }}
     token = jwt.encode(token, secret_key, algorithm="HS256")
-    token = token.decode('utf-8')
+    token = token.decode("utf-8")
 
     customer_devices = frappe.get_all("User Device", ['name'], filters={"udid": udid, "docstatus": ['<', 2]})
     customer_device = None
@@ -256,7 +257,7 @@ def register(**kwards):
     log.request = "register"
     log.flags.ignore_permissions = True
     log.insert()
-    frappe.db.commit();
+    frappe.db.commit()
     frappe.local.response['status'] = {
         "message": msg,
         "code": 1,
@@ -322,10 +323,10 @@ def change_password(**kwards):
     frappe.db.commit()
 
     name = customer.name
-    secret_key = "Me System";
-    issuedat_claim = time.time();
-    notbefore_claim = issuedat_claim;
-    expire_claim = issuedat_claim + (60 * 60 * 3 * 24 * 5);
+    secret_key = "Me System"
+    issuedat_claim = time.time()
+    notbefore_claim = issuedat_claim
+    expire_claim = issuedat_claim + (60 * 60 * 3 * 24 * 5)
     token = {
         "iat": issuedat_claim,
         "nbf": notbefore_claim,
@@ -333,11 +334,11 @@ def change_password(**kwards):
         "data": {
             "full_name": customer.customer_name,
             "name": name
-        }};
+        }}
     token = jwt.encode(token, secret_key, algorithm="HS256")
-    token = token.decode('utf-8')
+    token = token.decode("utf-8")
 
-    current_token = frappe.get_request_header("Authorization").replace('Bearer ', '');
+    current_token = frappe.get_request_header("Authorization").replace('Bearer ', '')
     customer_devices = frappe.get_all("User Device", ['name'], filters={"access_token": current_token, "docstatus": ['<', 2]})
     customer_device = frappe.get_doc("User Device",customer_devices[0].name)
     customer_device.access_token = token
@@ -366,7 +367,7 @@ def logout(**kwards):
             frappe.local.response['status'] = {"message": _("Not Authorized"), "success": False, "code": 15}
             frappe.local.response['data'] = None
             return
-        token = frappe.get_request_header("Authorization").replace('Bearer ', '');
+        token = frappe.get_request_header("Authorization").replace('Bearer ', '')
         customerDevices = frappe.get_all("User Device", ['name'],
                                          filters={"access_token": token, "docstatus": ['<', 2]})
         if not customerDevices:
@@ -388,7 +389,7 @@ def logout(**kwards):
 
         frappe.db.sql(
             """update `tabUser Device` set access_token = "" where name = '{0}' """.format(customer_device.name))
-        frappe.db.commit();
+        frappe.db.commit()
 
         msg = _("Logout")
         frappe.local.response['status'] = {"message": msg,
@@ -427,7 +428,7 @@ def get_profile(**kwards):
     log.request = "profile info"
     log.flags.ignore_permissions = True
     log.insert()
-    frappe.db.commit();
+    frappe.db.commit()
 
     frappe.local.response['status'] = {
         "message": msg,
@@ -521,7 +522,7 @@ def update_profile(**kwards):
     log.request = "profile updated successful"
     log.flags.ignore_permissions = True
     log.insert()
-    frappe.db.commit();
+    frappe.db.commit()
 
     frappe.local.response['status'] = {
         "message": msg,
@@ -541,7 +542,7 @@ def update_profile(**kwards):
 @frappe.whitelist(allow_guest=True)
 def check_token():
     request = frappe.request
-    secret_key = "Me System";
+    secret_key = "Me System"
     frappe.local.lang = "ar"
     log = frappe.get_doc({"doctype": "Api Log"})
     lang = "ar"
@@ -555,11 +556,11 @@ def check_token():
             log.response = _("Not Authorized")
             log.flags.ignore_permissions = True
             log.insert()
-            frappe.db.commit();
+            frappe.db.commit()
             frappe.local.response['status'] = {"message": _("Not Authorized"), "success": False, "code": 403}
             frappe.local.response['data'] = None
             return
-        token = frappe.get_request_header("Authorization").replace('Bearer ', '');
+        token = frappe.get_request_header("Authorization").replace('Bearer ', '')
         log.token = token
 
         customerDevices = frappe.get_all("User Device", ['name'],
@@ -569,7 +570,7 @@ def check_token():
             log.response = _("Not Authorized")
             log.flags.ignore_permissions = True
             log.insert()
-            frappe.db.commit();
+            frappe.db.commit()
             frappe.local.response['status'] = {"message": _("Not Authorized"), "success": False, "code": 403}
             frappe.local.response['data'] = None
             return
@@ -580,7 +581,7 @@ def check_token():
             log.response = _("Not Authorized")
             log.flags.ignore_permissions = True
             log.insert()
-            frappe.db.commit();
+            frappe.db.commit()
             frappe.local.response['status'] = {"message": _("Not Authorized"), "success": False, "code": 403}
             frappe.local.response['data'] = None
             return
@@ -590,7 +591,7 @@ def check_token():
             log.response = _("Not Authorized")
             log.flags.ignore_permissions = True
             log.insert()
-            frappe.db.commit();
+            frappe.db.commit()
             frappe.local.response['status'] = {"message": _("Not Authorized"), "success": False, "code": 403}
             frappe.local.response['data'] = None
             return
@@ -599,14 +600,14 @@ def check_token():
         log.response = "success login"
         log.flags.ignore_permissions = True
         log.insert()
-        frappe.db.commit();
+        frappe.db.commit()
         return {"user": customer}
     else:
         frappe.local.response['http_status_code'] = 403
         log.response = _("Not Authorized")
         log.flags.ignore_permissions = True
         log.insert()
-        frappe.db.commit();
+        frappe.db.commit()
         frappe.local.response['status'] = {"message": _("Not Authorized"), "success": False, "code": 403}
         frappe.local.response['data'] = None
         return
