@@ -84,7 +84,7 @@ def login(**kwards):
             "full_name": full_name,
             "name": name
         }};
-    token = jwt.encode(token, secret_key, algorithm="HS256").decode("utf-8")
+    token = jwt.encode(token, secret_key, algorithm="HS256")
     # token = token.decode('utf-8')
     supervisor_devices = frappe.get_all("User Device", ['name'], filters={"udid": udid, "docstatus": ['<', 2]})
     supervisor_device = None
@@ -194,7 +194,7 @@ def change_password(**kwards):
             "full_name": supervisor.supervisor,
             "name": name
         }}
-    token = jwt.encode(token, secret_key, algorithm="HS256").decode("utf-8")
+    token = jwt.encode(token, secret_key, algorithm="HS256")
     # token = token.decode('utf-8')
 
     current_token = frappe.get_request_header("Authorization").replace('Bearer ', '')
