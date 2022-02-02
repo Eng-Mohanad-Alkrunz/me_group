@@ -83,7 +83,7 @@ def login(**kwards):
             "full_name": full_name,
             "name": name
         }}
-    token = jwt.encode(token, secret_key, algorithm="HS256")
+    token = jwt.encode(token, secret_key, algorithm="HS256").decode("utf-8")
     customer_devices = frappe.get_all("User Device", ['name'], filters={"udid": udid, "docstatus": ['<', 2]})
     customer_device = None
     if customer_devices:
@@ -98,7 +98,7 @@ def login(**kwards):
     customer_device.access_token = token
     customer_device.enabled = 1
     customer_device.flags.ignore_permissions = True
-    customer_device.save()
+    customer_device.save(ignore_permissions=True)
 
     ret_Customer = user(customer_doc.name)
     msg = _("Login Success")

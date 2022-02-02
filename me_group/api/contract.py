@@ -69,6 +69,7 @@ def create_contract(**kwards):
     id_image = None
     if 'id_image' in frappe.request.files:
         res = upload_file("id_image")
+
         id_image = res.file_url
     instrument_image = None
     if 'instrument_image' in frappe.request.files:
@@ -511,37 +512,37 @@ def user(user_name):
     }
     return customer_doc
 
-# @frappe.whitelist(allow_guest=True)
-# def uploadfile(param):
-#     user = frappe.get_doc("User", frappe.session.user)
-#
-#     file = frappe.request.files[param]
-#     is_private = 0
-#     fieldname = ""
-#     folder = 'Home'
-#     filename = ""
-#     content = None
-#
-#     if file:
-#         content = file.stream.read()
-#         filename = file.filename
-#         content_type = guess_type(filename)[0]
-#     frappe.local.uploaded_file = content
-#     frappe.local.uploaded_filename = filename
-#
-#     ret = frappe.get_doc({
-#         "doctype": "File",
-#         "attached_to_doctype": "",
-#         "attached_to_name": "",
-#         "attached_to_field": "",
-#         "folder": folder,
-#         "file_name": filename,
-#         "file_url": "",
-#         "is_private": cint(is_private),
-#         "content": content
-#     })
-#     ret.save(ignore_permissions=True)
-#     return ret
+@frappe.whitelist(allow_guest=True)
+def upload_file(param):
+    user = frappe.get_doc("User", frappe.session.user)
+
+    file = frappe.request.files[param]
+    is_private = 0
+    fieldname = ""
+    folder = 'Home'
+    filename = ""
+    content = None
+
+    if file:
+        content = file.stream.read()
+        filename = file.filename
+        content_type = guess_type(filename)[0]
+    frappe.local.uploaded_file = content
+    frappe.local.uploaded_filename = filename
+
+    ret = frappe.get_doc({
+        "doctype": "File",
+        "attached_to_doctype": "",
+        "attached_to_name": "",
+        "attached_to_field": "",
+        "folder": folder,
+        "file_name": filename,
+        "file_url": "",
+        "is_private": cint(is_private),
+        "content": content
+    })
+    ret.save(ignore_permissions=True)
+    return ret
 
 @frappe.whitelist(allow_guest=True)
 def updatefile(data):
@@ -576,53 +577,54 @@ def updatefile(data):
     return gallery
 
 
-@frappe.whitelist(allow_guest=True)
-def upload_file(param):
-	user = None
-	if frappe.session.user == 'Guest':
-		if frappe.get_system_settings('allow_guests_to_upload_files'):
-			ignore_permissions = True
-		else:
-			return
-	else:
-		user = frappe.get_doc("User", frappe.session.user)
-		ignore_permissions = True
-
-	files = frappe.request.files
-	is_private = frappe.form_dict.is_private
-	doctype = frappe.form_dict.doctype
-	docname = frappe.form_dict.docname
-	fieldname = frappe.form_dict.fieldname
-	file_url = frappe.form_dict.file_url
-	folder = frappe.form_dict.folder or 'Home'
-	filename = frappe.form_dict.file_name
-	content = None
-
-	if param in files:
-		file = files[param]
-		content = file.stream.read()
-		filename = file.filename
-
-	frappe.local.uploaded_file = content
-	frappe.local.uploaded_filename = filename
-
-	if not file_url and (frappe.session.user == "Guest" or (user and not user.has_desk_access())):
-		import mimetypes
-		filetype = mimetypes.guess_type(filename)[0]
-		if filetype not in ALLOWED_MIMETYPES:
-			frappe.throw(_("You can only upload JPG, PNG, PDF, or Microsoft documents."))
-
-	else:
-		ret = frappe.get_doc({
-			"doctype": "File",
-			"attached_to_doctype": doctype,
-			"attached_to_name": docname,
-			"attached_to_field": fieldname,
-			"folder": folder,
-			"file_name": filename,
-			"file_url": file_url,
-			"is_private": cint(is_private),
-			"content": content
-		})
-		ret.save(ignore_permissions=ignore_permissions)
-		return ret
+# @frappe.whitelist(allow_guest=True)
+# def upload_file(param):
+#     user = None
+#     if frappe.session.user == 'Guest':
+#         if frappe.get_system_settings('allow_guests_to_upload_files'):
+#             ignore_permissions = True
+#     else:
+#         user = frappe.get_doc("User", frappe.session.user)
+#         ignore_permissions = True
+#     frappe.session.user
+#     ignore_permissions = True
+#     files = frappe.request.files
+#     is_private = frappe.form_dict.is_private
+#     doctype = frappe.form_dict.doctype
+#     docname = frappe.form_dict.docname
+#     fieldname = frappe.form_dict.fieldname
+#     file_url = frappe.form_dict.file_url
+#     folder = frappe.form_dict.folder or 'Home'
+#     filename = frappe.form_dict.file_name
+#     content = None
+#
+#     if param in files:
+#
+#         file = files[param]
+#
+#         content = file.stream.read()
+#         filename = file.filename
+#
+#         frappe.local.uploaded_file = content
+#         frappe.local.uploaded_filename = filename
+#
+#     # if not file_url and (frappe.session.user == "Guest" or (user and not user.has_desk_access())):
+#         import mimetypes
+#         filetype = mimetypes.guess_type(filename)[0]
+#         # if filetype not in ALLOWED_MIMETYPES:
+#         #     frappe.throw(_("You can only upload JPG, PNG, PDF, or Microsoft documents."))
+#
+#
+#         ret = frappe.get_doc({
+#             "doctype": "File",
+#             "attached_to_doctype": doctype,
+#             "attached_to_name": docname,
+#             "attached_to_field": fieldname,
+#             "folder": folder,
+#             "file_name": filename,
+#             "file_url": file_url,
+#             "is_private": cint(is_private),
+#             "content": content
+#         })
+#         ret.save(ignore_permissions=ignore_permissions)
+#         return ret
