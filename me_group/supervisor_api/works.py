@@ -69,6 +69,97 @@ def create_work(**kwards):
 
 
 @frappe.whitelist(allow_guest=True)
+def create_work_management(**kwards):
+    lang = "ar"
+    if frappe.get_request_header("Language"):
+        lang = frappe.get_request_header("Language")
+
+    frappe.local.lang = lang
+    data = kwards
+
+    check = check_token()
+    user1 = None
+    contract = None
+    date = None
+    work_name = None
+    if check and "user" in check:
+        user1 = check['user']
+
+    if not user1:
+        frappe.local.response['http_status_code'] = 403
+        frappe.local.response['status'] = {"message": _("Not Authorized"), "success": False, "code": 403}
+        frappe.local.response['data'] = None
+        return
+
+    work_name = data['work_name']
+    if "contract" in data:
+        contract = data['contract']
+    else:
+        frappe.local.response['status'] = {"message": _("contract id required"), "success": False, "code": 403}
+        frappe.local.response['data'] = None
+        return
+
+    if "date" in data:
+        date = data['date']
+
+    email = data['email']
+    new_work = frappe.new_doc("Work Management Application")
+    work = frappe.get_all("Work Application",filters={"work_name":work_name})
+    if len(work) == 1 :
+        new_work.set("work", work[0].name)
+    new_work.set("supervisor", user1.name)
+    if date is not None:
+        new_work.set("date", date)
+    new_work.set("contract", contract)
+    new_work.set("email", email)
+    new_work.save(ignore_permissions=True)
+    frappe.db.commit()
+    frappe.local.response['status'] = {"message": _("Work created successfully"), "success": True, "code": 200}
+    frappe.local.response['data'] = None
+
+
+@frappe.whitelist(allow_guest=True)
+def get_management_works(**kwards):
+    lang = "ar"
+    if frappe.get_request_header("Language"):
+        lang = frappe.get_request_header("Language")
+
+    frappe.local.lang = lang
+    data = kwards
+
+    check = check_token()
+    user1 = None
+    contract = None
+    if check and "user" in check:
+        user1 = check['user']
+
+    if not user1:
+        frappe.local.response['http_status_code'] = 403
+        frappe.local.response['status'] = {"message": _("Not Authorized"), "success": False, "code": 403}
+        frappe.local.response['data'] = None
+        return
+
+
+    result = []
+    works = frappe.get_all("Work Management Application",fields =["*"],filters= {"supervisor":user1.name})
+    for work in works:
+        work_doc = frappe.get_doc("Work Management Application",work.name)
+        result.append({
+            "id":work.name,
+            "contract":work.contract,
+            "date":work.date,
+            "customer" :work.customer,
+            "work": work.work,
+            "email": work.email,
+        })
+
+
+    frappe.local.response['status'] = {"message": _("Works list "), "success": True, "code": 200}
+    frappe.local.response['data'] = result
+
+
+
+@frappe.whitelist(allow_guest=True)
 def get_works(**kwards):
     lang = "ar"
     if frappe.get_request_header("Language"):

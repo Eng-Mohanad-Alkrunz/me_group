@@ -9,7 +9,8 @@ import jwt
 from frappe import _
 import base64
 from passlib.context import CryptContext
-
+from mimetypes import guess_type
+from frappe.utils import add_days, cint
 
 
 @frappe.whitelist(allow_guest=True)
@@ -83,7 +84,10 @@ def login(**kwards):
             "full_name": full_name,
             "name": name
         }}
-    token = jwt.encode(token, secret_key, algorithm="HS256")
+    try:
+        token = jwt.encode(token, secret_key, algorithm="HS256").decode()
+    except:
+        token = jwt.encode(token, secret_key, algorithm="HS256")
     customer_devices = frappe.get_all("User Device", ['name'], filters={"udid": udid, "docstatus": ['<', 2]})
     customer_device = None
     if customer_devices:
@@ -95,7 +99,7 @@ def login(**kwards):
     customer_device.user = customer_doc.name
     customer_device.udid = udid
     customer_device.fcm = fcm
-    customer_device.access_token = token
+    customer_device.access_token = str(token)
     customer_device.enabled = 1
     customer_device.flags.ignore_permissions = True
     customer_device.save(ignore_permissions=True)
@@ -120,7 +124,7 @@ def login(**kwards):
 
     frappe.local.response['data'] = {
         "User": ret_Customer,
-        "access_token": token
+        "access_token": str(token)
     }
 
 
@@ -201,13 +205,19 @@ def register(**kwards):
         return
     password = password.encode("utf-8")
     encoded = base64.b64encode(password)
-
+    image = None
+    try:
+        res = uploadfile()
+        image = res.file_url
+    except:
+        image = None
     customer_doc = frappe.get_doc({"doctype": "Customer",
                                    "mobile_number": mobile,
                                    "email": email,
                                    "customer_name": full_name,
                                    "password":str(encoded),
                                    "city":city,
+                                   "image":image,
                                    "customer_type":"Individual",
                                    "customer_group":"Individual",
                                    "territory":"Rest Of The World"
@@ -227,7 +237,10 @@ def register(**kwards):
             "full_name": full_name,
             "name": name
         }}
-    token = jwt.encode(token, secret_key, algorithm="HS256")
+    try:
+        token = jwt.encode(token, secret_key, algorithm="HS256").decode()
+    except:
+        token = jwt.encode(token, secret_key, algorithm="HS256")
     # token = token.decode("utf-8")
 
     customer_devices = frappe.get_all("User Device", ['name'], filters={"udid": udid, "docstatus": ['<', 2]})
@@ -241,7 +254,7 @@ def register(**kwards):
     customer_device.user = name
     customer_device.udid = udid
     customer_device.fcm = fcm
-    customer_device.access_token = token
+    customer_device.access_token = str(token)
     customer_device.enabled = 1
     customer_device.flags.ignore_permissions = True
     customer_device.save()
@@ -263,7 +276,7 @@ def register(**kwards):
     }
     frappe.local.response['data'] = {
         "Customer": ret_Customer,
-        "access_token": token
+        "access_token": str(token)
     }
 
 @frappe.whitelist(allow_guest=True)
@@ -333,19 +346,22 @@ def change_password(**kwards):
             "full_name": customer.customer_name,
             "name": name
         }}
-    token = jwt.encode(token, secret_key, algorithm="HS256")
+    try:
+        token = jwt.encode(token, secret_key, algorithm="HS256").decode()
+    except:
+        token = jwt.encode(token, secret_key, algorithm="HS256")
     # token = token.decode("utf-8")
 
     current_token = frappe.get_request_header("Authorization").replace('Bearer ', '')
     customer_devices = frappe.get_all("User Device", ['name'], filters={"access_token": current_token, "docstatus": ['<', 2]})
     customer_device = frappe.get_doc("User Device",customer_devices[0].name)
-    customer_device.access_token = token
+    customer_device.access_token = str(token)
     customer_device.save(ignore_permissions=True)
     frappe.db.commit()
     frappe.local.response['status'] = {"message": _("Password reset successfully"), "success": True, "code": 200}
     frappe.local.response['data'] = {
         "data":None,
-        "access_token":token
+        "access_token":str(token)
     }
     return
 
@@ -656,6 +672,38 @@ def user(user_name):
         "email": customer.email,
         "mobile_number": customer.mobile_number,
         "is_disabled": isDisabled,
-        "city" : customer.city
+        "city" : customer.city,
+        "image" :customer.image
     }
     return customer_doc
+
+@frappe.whitelist(allow_guest=True)
+def uploadfile():
+    user = frappe.get_doc("User", frappe.session.user)
+    print(user)
+    file = frappe.request.files['image']
+    is_private = 0
+    fieldname = ""
+    folder = 'Home'
+    filename = ""
+    content = None
+
+    if file:
+        content = file.stream.read()
+        filename = file.filename
+        content_type = guess_type(filename)[0]
+    frappe.local.uploaded_file = content
+    frappe.local.uploaded_filename = filename
+    ret = frappe.get_doc({
+        "doctype": "File",
+        "attached_to_doctype": "",
+        "attached_to_name": "",
+        "attached_to_field": "",
+        "folder": folder,
+        "file_name": filename,
+        "file_url": "",
+        "is_private": cint(is_private),
+        "content": content
+    })
+    ret.save(ignore_permissions=True)
+    return ret

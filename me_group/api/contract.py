@@ -68,24 +68,26 @@ def create_contract(**kwards):
 
     id_image = None
     if 'id_image' in frappe.request.files:
-        res = upload_file("id_image")
-
-        id_image = res.file_url
+        try:
+            res = upload_file("id_image")
+            id_image = res.file_url
+        except:
+            id_image = None
     instrument_image = None
     if 'instrument_image' in frappe.request.files:
-        res = upload_file("instrument_image")
-        instrument_image = res.file_url
+        try:
+            res = upload_file("instrument_image")
+            instrument_image = res.file_url
+        except:
+            instrument_image = None
+
     license_image = None
     if 'license_image' in frappe.request.files:
-        res = upload_file("license_image")
-        license_image = res.file_url
-    # diagrams = None
-    # if 'diagrams' in frappe.request.files:
-    #     res = upload_file("diagrams")
-    #     diagrams = res.file_url
-
-
-
+        try:
+            res = upload_file("license_image")
+            license_image = res.file_url
+        except:
+            license_image = None
 
     if "id_no" in data:
         id_no = data['id_no']
@@ -94,6 +96,11 @@ def create_contract(**kwards):
         frappe.local.response['data'] = None
         return
 
+    diagrams = None
+    try:
+        diagrams=updatefile(data)
+    except:
+        diagrams = None
     contract = frappe.get_doc(dict(
         doctype='Contract Application',
         customer=user1.name,
@@ -109,7 +116,7 @@ def create_contract(**kwards):
         id_image=id_image,
         license_image=license_image,
         instrument_image=instrument_image,
-        diagrams=updatefile(data),
+        diagrams=diagrams,
         engineer_contact=engineer_contact,
         instrument_no=instrument_no,
         docstatus=0,
@@ -388,6 +395,45 @@ def get_contract_financial(**kwards):
     frappe.local.response['status'] = {"message": _("Contracts List"), "success": True, "code": 200}
     frappe.local.response['data'] = result
 
+
+@frappe.whitelist(allow_guest=True)
+def get_management_works(**kwards):
+    lang = "ar"
+    if frappe.get_request_header("Language"):
+        lang = frappe.get_request_header("Language")
+
+    frappe.local.lang = lang
+    data = kwards
+
+    check = check_token()
+    user1 = None
+    contract = None
+    if check and "user" in check:
+        user1 = check['user']
+
+    if not user1:
+        frappe.local.response['http_status_code'] = 403
+        frappe.local.response['status'] = {"message": _("Not Authorized"), "success": False, "code": 403}
+        frappe.local.response['data'] = None
+        return
+
+
+    result = []
+    works = frappe.get_all("Work Management Application",fields =["*"],filters= {"customer":user1.name})
+    for work in works:
+        work_doc = frappe.get_doc("Work Management Application",work.name)
+        result.append({
+            "id":work.name,
+            "contract":work.contract,
+            "date":work.date,
+            "supervisor" :work.supervisor,
+            "work": work.work,
+            "email": work.email,
+        })
+
+
+    frappe.local.response['status'] = {"message": _("Works list "), "success": True, "code": 200}
+    frappe.local.response['data'] = result
 
 @frappe.whitelist(allow_guest=True)
 def check_token():

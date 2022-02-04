@@ -1,0 +1,78 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-02-04 16:36:00.349740",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "contract",
+  "supervisor",
+  "customer",
+  "work",
+  "date",
+  "email"
+ ],
+ "fields": [
+  {
+   "fieldname": "contract",
+   "fieldtype": "Link",
+   "label": "contract",
+   "options": "Contract Application"
+  },
+  {
+   "fieldname": "supervisor",
+   "fieldtype": "Link",
+   "label": "supervisor",
+   "options": "Supervisor"
+  },
+  {
+   "fetch_from": "contract.customer",
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "customer",
+   "options": "Customer"
+  },
+  {
+   "default": "Today",
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "date"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Engineer Email"
+  },
+  {
+   "fieldname": "work",
+   "fieldtype": "Link",
+   "label": "work",
+   "options": "Work Application"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2022-02-04 16:37:23.779377",
+ "modified_by": "Administrator",
+ "module": "Me Group",
+ "name": "Work Management Application",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

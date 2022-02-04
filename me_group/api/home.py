@@ -40,7 +40,7 @@ def get_home():
         else:
             finishing_list.append({
                 "id": main.name,
-                "name": _(main.finishing),
+                "name": _(main.menu_name),
                 "image": main.image,
                 "enabled": enabled
             })
