@@ -159,6 +159,7 @@ def add_conditions(**kwards):
     frappe.db.commit()
 
     doc = {
+        "id": contract_doc.name,
         "id_no": contract_doc.id_no,
         "id_release_date": contract_doc.id_release_date,
         "id_issuer": contract_doc.id_issuer,
