@@ -52,20 +52,25 @@ def create_bound(**kwards):
     if "amount" in data:
         amount = data['amount']
 
-    reason = None
-
-    new_bond = frappe.new_doc("Bond Application")
-    new_bond.set("supervisor", user1.name)
-    new_bond.set("contract", contract)
-    new_bond.set("id_no", id_no)
-    new_bond.set("amount", amount)
-    new_bond.set("reason", reason)
-    if date is not None:
-        new_bond.set("date", date)
-    new_bond.save(ignore_permissions=True)
-    frappe.db.commit()
-    frappe.local.response['status'] = {"message": _("Bound created successfully"), "success": True, "code": 200}
-    frappe.local.response['data'] = None
+    reason = ""
+    if 'reason' in data:
+        reason = data['reason']
+    try:
+        new_bond = frappe.new_doc("Bond Application")
+        new_bond.set("supervisor", user1.name)
+        new_bond.set("contract", contract)
+        new_bond.set("id_no", id_no)
+        new_bond.set("amount", amount)
+        new_bond.set("reason", reason)
+        if date is not None:
+            new_bond.set("date", date)
+        new_bond.save(ignore_permissions=True)
+        frappe.db.commit()
+        frappe.local.response['status'] = {"message": _("Bound created successfully"), "success": True, "code": 200}
+        frappe.local.response['data'] = None
+    except:
+        frappe.local.response['status'] = {"message": _("Failed to create Bound"), "success": True, "code": 200}
+        frappe.local.response['data'] = None
 
 
 @frappe.whitelist(allow_guest=True)
