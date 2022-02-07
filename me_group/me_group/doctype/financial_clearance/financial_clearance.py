@@ -10,7 +10,7 @@ class FinancialClearance(Document):
 	def before_save(self):
 		agreement = frappe.get_single("Khalta Settings").agreement_essay
 		if agreement != None:
-			print(self.customer)
+
 			agreement = str.replace(agreement, '{Customer}', self.customer, 1)
 			agreement = str.replace(agreement, '{id_no}', self.id_no, 1)
 			agreement = str.replace(agreement, '{contract_id}', self.contract_application, 1)

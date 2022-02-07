@@ -193,7 +193,7 @@ def check_token():
 @frappe.whitelist(allow_guest=True)
 def uploadfile():
     user = frappe.get_doc("User", frappe.session.user)
-    print(user)
+
     file = frappe.request.files['image']
     is_private = 0
     fieldname = ""
@@ -223,6 +223,6 @@ def uploadfile():
         "is_private": cint(is_private),
         "content": content
     })
-    print(str(ret) + "TEds")
+
     ret.save(ignore_permissions=True)
     return ret

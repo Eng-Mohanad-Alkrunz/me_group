@@ -189,7 +189,7 @@ def get_contracts(**kwards):
         user1 = check['user']
     contracts = None
     if search is not None:
-        print(search)
+
         contracts = frappe.db.sql(f"SELECT name  FROM `tabContract Application` where customer = '{user1.name}' AND (name LIKE '%{search}%' OR id_no LIKE '%{search}%')", as_dict=True)
     else:
         contracts = frappe.get_all("Contract Application",filters={"customer":user1.name})
@@ -664,7 +664,7 @@ def updatefile(data):
         gallery.append({
             "images": ret.file_url
         })
-        print(gallery)
+
     return gallery
 
 

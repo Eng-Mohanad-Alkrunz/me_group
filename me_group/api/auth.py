@@ -321,8 +321,6 @@ def change_password(**kwards):
     old_encoded = base64.b64encode(password)
     password = new_password.encode("utf-8")
     new_encoded = base64.b64encode(password)
-    print(user1.password)
-    print(old_encoded)
     if str(old_encoded) != user1.password:
         frappe.local.response['status'] = {"message": _("Old password not correct"), "success": False, "code": 403}
         frappe.local.response['data'] = None
@@ -680,7 +678,6 @@ def user(user_name):
 @frappe.whitelist(allow_guest=True)
 def uploadfile():
     user = frappe.get_doc("User", frappe.session.user)
-    print(user)
     file = frappe.request.files['image']
     is_private = 0
     fieldname = ""

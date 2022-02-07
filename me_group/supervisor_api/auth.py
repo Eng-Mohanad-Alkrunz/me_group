@@ -171,8 +171,7 @@ def change_password(**kwards):
     old_encoded = base64.b64encode(password).decode("utf-8")
     password = new_password.encode("utf-8")
     new_encoded = base64.b64encode(password).decode("utf-8")
-    print(user1.password)
-    print(old_encoded)
+
     if str(old_encoded) != user1.password:
         frappe.local.response['status'] = {"message": _("Old password not correct"), "success": False, "code": 403}
         frappe.local.response['data'] = None
