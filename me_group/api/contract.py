@@ -127,6 +127,7 @@ def create_contract(**kwards):
     frappe.db.commit()
     contract_doc = frappe.get_doc("Contract Application",frappe.get_all("Contract Application",filters={'customer':user1.name},order_by="creation desc")[0])
     doc ={
+        "id":contract_doc.name
         "id_no":contract_doc.id_no,
         "id_release_date":contract_doc.id_release_date,
         "id_issuer":contract_doc.id_issuer,
