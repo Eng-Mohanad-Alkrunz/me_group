@@ -9,6 +9,8 @@
  "field_order": [
   "contract_status",
   "sb00",
+  "sub_menu_id",
+  "contract_type",
   "id_no",
   "id_release_date",
   "id_issuer",
@@ -189,11 +191,24 @@
    "fieldname": "contract_copy",
    "fieldtype": "Attach",
    "label": "\u0635\u0648\u0631\u0629 \u0627\u0644\u0639\u0642\u062f"
+  },
+  {
+   "fieldname": "sub_menu_id",
+   "fieldtype": "Data",
+   "label": "\u0627\u0644\u0646\u0648\u0639",
+   "read_only": 1
+  },
+  {
+   "default": "without material",
+   "fieldname": "contract_type",
+   "fieldtype": "Select",
+   "label": "\u0646\u0648\u0639 \u0627\u0644\u0628\u0646\u0627\u0621",
+   "options": "with material\nwithout material"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-02-07 10:21:29.484889",
+ "modified": "2022-02-07 10:36:46.314780",
  "modified_by": "Administrator",
  "module": "Me Group",
  "name": "Contract Application",

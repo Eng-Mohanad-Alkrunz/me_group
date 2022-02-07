@@ -17,3 +17,9 @@ class ContractApplication(Document):
 				new_financial_clearance.id_no = self.id_no
 				new_financial_clearance.save(ignore_permissions=True)
 
+		if self.sub_menu_id:
+			try:
+				self.sub_menu_id = frappe.get_doc("Sub Menu Child",self.sub_menu_id).sub_name
+			except:
+				self.sub_menu_id = ""
+

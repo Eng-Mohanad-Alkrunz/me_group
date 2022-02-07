@@ -95,6 +95,8 @@ def create_contract(**kwards):
         frappe.local.response['status'] = {"message": _("ID NO. Required"), "success": False, "code": 403}
         frappe.local.response['data'] = None
         return
+    contract_type = data['contract_type']
+    sub_menu_id = data['sub_menu_id']
 
     diagrams = None
     try:
