@@ -34,7 +34,8 @@
   "customer_note",
   "cb02",
   "price",
-  "financial_agreement"
+  "financial_agreement",
+  "contract_copy"
  ],
  "fields": [
   {
@@ -183,11 +184,16 @@
    "options": "pending\napproved by management\napproved by the customer\nfinal approved\nend of the contract",
    "read_only": 1,
    "translatable": 1
+  },
+  {
+   "fieldname": "contract_copy",
+   "fieldtype": "Attach",
+   "label": "\u0635\u0648\u0631\u0629 \u0627\u0644\u0639\u0642\u062f"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-01-29 13:49:51.318323",
+ "modified": "2022-02-07 10:21:29.484889",
  "modified_by": "Administrator",
  "module": "Me Group",
  "name": "Contract Application",

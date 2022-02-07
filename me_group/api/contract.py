@@ -63,7 +63,7 @@ def create_contract(**kwards):
     office_name = data['office_name']
     engineer_name = data['engineer_name']
     engineer_contact = data['engineer_contact']
-    conditions = json.loads(data['conditions'])
+
     customer = user1.name
 
     id_image = None
@@ -112,7 +112,7 @@ def create_contract(**kwards):
         license_date=license_date,
         office_name=office_name,
         engineer_name=engineer_name,
-        conditions=conditions,
+
         id_image=id_image,
         license_image=license_image,
         instrument_image=instrument_image,
@@ -123,10 +123,54 @@ def create_contract(**kwards):
     )).insert(ignore_permissions=True)
     contract.save(ignore_permissions=True)
     frappe.db.commit()
-
+    contract_doc = frappe.get_doc("Contract Application",frappe.get_all("Contract Application",filters={'customer':user1.name},order_by="creation desc")[0])
+    doc ={
+        "id_no":contract_doc.id_no,
+        "id_release_date":contract_doc.id_release_date,
+        "id_issuer":contract_doc.id_issuer,
+        "instrument_date":contract_doc.instrument_date,
+        "license_no":contract_doc.license_no,
+        "license_date":contract_doc.license_date,
+        "office_name":contract_doc.office_name,
+        "engineer_name":contract_doc.engineer_name,
+        "id_image":contract_doc.id_image,
+        "engineer_contact":contract_doc.engineer_contact,
+        "instrument_no":contract_doc.instrument_no,
+        "contract_copy": contract_doc.contract_copy
+    }
     frappe.local.response['status'] = {"message": _("Contract Created Successfully"), "success": True, "code": 200}
-    frappe.local.response['data'] = None
+    frappe.local.response['data'] = doc
 
+@frappe.whitelist(allow_guest=True)
+def add_conditions(**kwards):
+    lang = "ar"
+    if frappe.get_request_header("Language"):
+        lang = frappe.get_request_header("Language")
+    frappe.local.lang = lang
+    data = kwards
+    contract_id = data['id']
+    conditions = json.loads(data['conditions'])
+    contract_doc = frappe.get_doc("Contract Application",contract_id)
+    contract_doc.set("conditions",conditions)
+    contract_doc.save(ignore_permissions=True)
+    frappe.db.commit()
+
+    doc = {
+        "id_no": contract_doc.id_no,
+        "id_release_date": contract_doc.id_release_date,
+        "id_issuer": contract_doc.id_issuer,
+        "instrument_date": contract_doc.instrument_date,
+        "license_no": contract_doc.license_no,
+        "license_date": contract_doc.license_date,
+        "office_name": contract_doc.office_name,
+        "engineer_name": contract_doc.engineer_name,
+        "id_image": contract_doc.id_image,
+        "engineer_contact": contract_doc.engineer_contact,
+        "instrument_no": contract_doc.instrument_no,
+        "contract_copy":contract_doc.contract_copy
+    }
+    frappe.local.response['status'] = {"message": _("Contract Created Successfully"), "success": True, "code": 200}
+    frappe.local.response['data'] = doc
 
 @frappe.whitelist(allow_guest=True)
 def get_contracts(**kwards):
@@ -265,6 +309,7 @@ def get_contract_details(**kwards):
         "customer_response":_(contract.customer_response),
         "customer_note":contract.customer_note,
         "price" : contract.price,
+        "contract_copy": contract.contract_copy,
         "conditions":conditions
     }
 
