@@ -124,6 +124,7 @@ def login(**kwards):
 
     frappe.local.response['data'] = {
         "User": ret_Customer,
+        "user_type":"Customer",
         "access_token": str(token)
     }
 
