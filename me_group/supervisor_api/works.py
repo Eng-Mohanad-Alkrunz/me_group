@@ -133,6 +133,10 @@ def get_management_works(**kwards):
     if check and "user" in check:
         user1 = check['user']
 
+
+    if 'contract' in data:
+        contract = data['contract']
+
     if not user1:
         frappe.local.response['http_status_code'] = 403
         frappe.local.response['status'] = {"message": _("Not Authorized"), "success": False, "code": 403}
@@ -141,7 +145,12 @@ def get_management_works(**kwards):
 
 
     result = []
-    works = frappe.get_all("Work Management Application",fields =["*"],filters= {"supervisor":user1.name})
+    works =None
+    if contract is not None and contract != "":
+        works = frappe.get_all("Work Management Application", fields=["*"], filters={"supervisor": user1.name,"contract":['like',"%"+contract+"%"]})
+    else:
+        works = frappe.get_all("Work Management Application", fields=["*"], filters={"supervisor": user1.name})
+    # works = frappe.get_all("Work Management Application",fields =["*"],filters= {"supervisor":user1.name})
     for work in works:
         work_doc = frappe.get_doc("Work Management Application",work.name)
         result.append({
