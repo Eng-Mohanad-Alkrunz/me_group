@@ -153,4 +153,31 @@ def get_about_us():
     frappe.local.response['data'] = result
 
 
+@frappe.whitelist(allow_guest=True)
+def contact_us(**kwards):
+    lang = "ar"
+    if frappe.get_request_header("Language"):
+        lang = frappe.get_request_header("Language")
+
+    frappe.local.lang = lang
+
+
+    data = kwards
+
+    mobile = data['mobile']
+    email = data['email']
+    message = data['message']
+
+
+    new_log = frappe.new_doc("Contact Us Log")
+    new_log.mobile = mobile
+    new_log.email = email
+    new_log.message = message
+    new_log.save(ignore_permissions=True)
+    frappe.db.commit()
+
+
+    frappe.local.response['status'] = {"message": _("Message Sent Successfully"), "success": True,
+                                       "code": 200}
+    frappe.local.response['data'] = None
 
