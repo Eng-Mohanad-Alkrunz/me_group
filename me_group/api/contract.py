@@ -183,18 +183,18 @@ def get_contracts(**kwards):
         lang = frappe.get_request_header("Language")
     frappe.local.lang = lang
     data = kwards
-    search = None
-    if "search" in data:
-        search = data['search']
+    contract = None
+    if "contract" in data:
+        contract = data['contract']
 
     check = check_token()
     user1 = None
     if check and "user" in check:
         user1 = check['user']
     contracts = None
-    if search is not None and search != "":
+    if contract is not None and contract != "":
 
-        contracts = frappe.db.sql(f"SELECT name  FROM `tabContract Application` where customer = '{user1.name}' AND (name LIKE '%{search}%' OR id_no LIKE '%{search}%')", as_dict=True)
+        contracts = frappe.db.sql(f"SELECT name  FROM `tabContract Application` where customer = '{user1.name}' AND (name LIKE '%{contract}%' OR id_no LIKE '%{contract}%')", as_dict=True)
     else:
         contracts = frappe.get_all("Contract Application",filters={"customer":user1.name},order_by= "creation desc")
 

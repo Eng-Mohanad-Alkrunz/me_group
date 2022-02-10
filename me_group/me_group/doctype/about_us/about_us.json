@@ -1,0 +1,60 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-02-10 16:51:07.970412",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "about",
+  "logo",
+  "us",
+  "slider"
+ ],
+ "fields": [
+  {
+   "fieldname": "about",
+   "fieldtype": "Small Text",
+   "label": "About us"
+  },
+  {
+   "fieldname": "logo",
+   "fieldtype": "Attach Image",
+   "label": "Logo"
+  },
+  {
+   "fieldname": "us",
+   "fieldtype": "Small Text",
+   "label": "Us"
+  },
+  {
+   "fieldname": "slider",
+   "fieldtype": "Table",
+   "label": "Slider",
+   "options": "Gallery Child"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2022-02-10 16:51:07.970412",
+ "modified_by": "Administrator",
+ "module": "Me Group",
+ "name": "About us",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
