@@ -493,6 +493,56 @@ def get_management_works(**kwards):
     frappe.local.response['status'] = {"message": _("Works list "), "success": True, "code": 200}
     frappe.local.response['data'] = result
 
+
+@frappe.whitelist(allow_guest=True)
+def get_invoices(**kwards):
+    lang = "ar"
+    if frappe.get_request_header("Language"):
+        lang = frappe.get_request_header("Language")
+
+    frappe.local.lang = lang
+    data = kwards
+
+    check = check_token()
+    user1 = None
+    contract = None
+    if check and "user" in check:
+        user1 = check['user']
+
+    if not user1:
+        frappe.local.response['http_status_code'] = 403
+        frappe.local.response['status'] = {"message": _("Not Authorized"), "success": False, "code": 403}
+        frappe.local.response['data'] = None
+        return
+
+    if "contract" in data:
+        contract = data['contract']
+    else:
+        frappe.local.response['status'] = {"message": _("contract id required"), "success": False, "code": 403}
+        frappe.local.response['data'] = None
+        return
+
+    result = []
+    invoices = frappe.get_all("Invoice Application",fields =["*"],filters= {"contract":contract})
+    for invoice in invoices:
+        invoice_doc = frappe.get_doc("Invoice Application",invoice.name)
+        status = _("Pending")
+        if invoice_doc.docstatus == 1:
+            status = _("Submitted")
+        else:
+            status = _("Pending")
+        result.append({
+            "id":invoice_doc.name,
+            "contract":invoice_doc.contract,
+            "date":invoice_doc.date,
+            "status" :status,
+            "image" : invoice_doc.image
+        })
+
+
+    frappe.local.response['status'] = {"message": _("Invoices list"), "success": True, "code": 200}
+    frappe.local.response['data'] = result
+
 @frappe.whitelist(allow_guest=True)
 def check_token():
     request = frappe.request
