@@ -98,5 +98,26 @@ def get_sub_menu(**kwards):
     frappe.local.response['data'] = result
 
 
+@frappe.whitelist(allow_guest=True)
+def get_terms():
+    lang = "ar"
+    if frappe.get_request_header("Language"):
+        lang = frappe.get_request_header("Language")
+
+    frappe.local.lang = lang
+
+
+    terms = frappe.get_single("Terms").terms
+
+
+
+    result = {
+        "terms":terms,
+    }
+
+    frappe.local.response['status'] = {"message": _("Terms And Conditions"), "success": True,
+                                       "code": 200}
+    frappe.local.response['data'] = result
+
 
 
