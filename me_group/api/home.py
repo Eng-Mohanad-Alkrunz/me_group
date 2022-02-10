@@ -144,7 +144,7 @@ def get_about_us():
     result = {
         "about_us":about_us,
         "us": us,
-        "logl": logo,
+        "logo": logo,
         "slider":my_slider
     }
 
