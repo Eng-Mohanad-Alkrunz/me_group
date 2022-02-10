@@ -129,7 +129,7 @@ def get_about_us():
     frappe.local.lang = lang
 
 
-    about_us = frappe.get_single("About us").about_us
+    about_us = frappe.get_single("About us").about
     us = frappe.get_single("About us").us
     logo = frappe.get_single("About us").logo
     slider =frappe.get_single("About us").slider
