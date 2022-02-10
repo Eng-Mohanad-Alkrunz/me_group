@@ -127,7 +127,6 @@ def login(**kwards):
         "access_token": str(token)
     }
 
-
 @frappe.whitelist(allow_guest=True)
 def register(**kwards):
     lang = "ar"
@@ -363,7 +362,6 @@ def change_password(**kwards):
     }
     return
 
-
 @frappe.whitelist(allow_guest=True)
 def logout(**kwards):
     lang = "ar"
@@ -409,7 +407,6 @@ def logout(**kwards):
                                            "code": 15}
         frappe.local.response['data'] = None
         return
-
 
 @frappe.whitelist(allow_guest=True)
 def get_profile(**kwards):
@@ -457,7 +454,6 @@ def get_profile(**kwards):
 
 
     }
-
 
 @frappe.whitelist(allow_guest=True)
 def update_profile(**kwards):
@@ -549,6 +545,94 @@ def update_profile(**kwards):
         "mobile_number":mobile,
         "city":city
     }
+
+@frappe.whitelist(allow_guest=True)
+def check_email(**kwards):
+    lang = "ar"
+    if frappe.get_request_header("Language"):
+        lang = frappe.get_request_header("Language")
+    frappe.local.lang = lang
+    data = kwards
+    email = None
+    if "email" in data:
+        email = data['email']
+
+    if email is not None :
+        if len(frappe.get_all("Customer",filters={"email":email})) > 0:
+            frappe.local.response['status'] = {
+                "message": _("Email is exist"),
+                "code": 1,
+                "success": True
+            }
+            frappe.local.response['data'] = {
+                "email": email,
+            }
+        else:
+            frappe.local.response['status'] = {"message": _("Email Not Exist"), "success": False, "code": 403}
+            frappe.local.response['data'] = None
+            return
+
+
+@frappe.whitelist(allow_guest=True)
+def reset_password(**kwards):
+    lang = "ar"
+    if frappe.get_request_header("Language"):
+        lang = frappe.get_request_header("Language")
+    frappe.local.lang = lang
+    data = kwards
+    email = None
+    if "email" in data:
+        email = data['email']
+
+    new_password = data['password']
+
+    if email is not None :
+        users = frappe.get_all("Customer",filters={"email":email})
+        if len(users) > 0:
+            customer = frappe.get_doc("Customer",users[0].name)
+            password = new_password.encode("utf-8")
+            new_encoded = base64.b64encode(password)
+            customer.set("password", str(new_encoded))
+            customer.save(ignore_permissions=True)
+            frappe.db.commit()
+
+            name = customer.name
+            secret_key = "Me System"
+            issuedat_claim = time.time()
+            notbefore_claim = issuedat_claim
+            expire_claim = issuedat_claim + (60 * 60 * 3 * 24 * 5)
+            token = {
+                "iat": issuedat_claim,
+                "nbf": notbefore_claim,
+                "exp": expire_claim,
+                "data": {
+                    "full_name": customer.customer_name,
+                    "name": name
+                }}
+            try:
+                token = jwt.encode(token, secret_key, algorithm="HS256").decode()
+            except:
+                token = jwt.encode(token, secret_key, algorithm="HS256")
+            # token = token.decode("utf-8")
+
+            # current_token = frappe.get_request_header("Authorization").replace('Bearer ', '')
+            customer_devices = frappe.get_all("User Device", ['name'],
+                                              filters={"user": users[0].name, "docstatus": ['<', 2]})
+            customer_device = frappe.get_doc("User Device", customer_devices[0].name)
+            customer_device.access_token = str(token)
+            customer_device.save(ignore_permissions=True)
+            frappe.db.commit()
+            frappe.local.response['status'] = {"message": _("Password reset successfully"), "success": True,
+                                               "code": 200}
+            frappe.local.response['data'] = {
+                "data": None
+                # "access_token": str(token)
+            }
+
+        else:
+            frappe.local.response['status'] = {"message": _("Email Not Exist"), "success": False, "code": 403}
+            frappe.local.response['data'] = None
+            return
 
 
 @frappe.whitelist(allow_guest=True)
