@@ -69,6 +69,31 @@ def create_invoice(**kwards):
 
 
 @frappe.whitelist(allow_guest=True)
+def get_contracts(**kwards):
+    lang = "ar"
+    if frappe.get_request_header("Language"):
+        lang = frappe.get_request_header("Language")
+    frappe.local.lang = lang
+    data = kwards
+    search = None
+    if "search" in data:
+        search = data['search']
+
+    check = check_token()
+    user1 = None
+    if check and "user" in check:
+        user1 = check['user']
+    contracts = None
+    if search is not None and search != "":
+
+        contracts = frappe.db.sql(f"SELECT name  FROM `tabContract Application` where (name LIKE '%{search}%' OR id_no LIKE '%{search}%')", as_dict=True)
+    else:
+        contracts = frappe.get_all("Contract Application",order_by="creation desc")
+
+    frappe.local.response['status'] = {"message": _("Contracts List"), "success": True, "code": 200}
+    frappe.local.response['data'] = contracts
+
+@frappe.whitelist(allow_guest=True)
 def get_invoices(**kwards):
     lang = "ar"
     if frappe.get_request_header("Language"):

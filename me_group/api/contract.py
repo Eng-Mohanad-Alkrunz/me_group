@@ -192,11 +192,11 @@ def get_contracts(**kwards):
     if check and "user" in check:
         user1 = check['user']
     contracts = None
-    if search is not None:
+    if search is not None and search != "":
 
         contracts = frappe.db.sql(f"SELECT name  FROM `tabContract Application` where customer = '{user1.name}' AND (name LIKE '%{search}%' OR id_no LIKE '%{search}%')", as_dict=True)
     else:
-        contracts = frappe.get_all("Contract Application",filters={"customer":user1.name})
+        contracts = frappe.get_all("Contract Application",filters={"customer":user1.name},order_by= "creation desc")
 
     frappe.local.response['status'] = {"message": _("Contracts List"), "success": True, "code": 200}
     frappe.local.response['data'] = contracts
