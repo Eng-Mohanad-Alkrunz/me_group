@@ -120,4 +120,37 @@ def get_terms():
     frappe.local.response['data'] = result
 
 
+@frappe.whitelist(allow_guest=True)
+def get_about_us():
+    lang = "ar"
+    if frappe.get_request_header("Language"):
+        lang = frappe.get_request_header("Language")
+
+    frappe.local.lang = lang
+
+
+    about_us = frappe.get_single("About us").about_us
+    us = frappe.get_single("About us").us
+    logo = frappe.get_single("About us").logo
+    slider =frappe.get_single("About us").slider
+
+    my_slider =[]
+    if slider is not None:
+        for image in slider:
+            my_slider.append({
+                "image":image.images
+            })
+
+    result = {
+        "about_us":about_us,
+        "us": us,
+        "logl": logo,
+        "slider":my_slider
+    }
+
+    frappe.local.response['status'] = {"message": _("About Us"), "success": True,
+                                       "code": 200}
+    frappe.local.response['data'] = result
+
+
 
