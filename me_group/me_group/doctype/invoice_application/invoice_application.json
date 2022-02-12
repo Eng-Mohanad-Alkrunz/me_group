@@ -9,18 +9,12 @@
  "field_order": [
   "invoice_name",
   "contract",
-  "supervisort",
+  "supervisor",
   "date",
   "image",
   "amended_from"
  ],
  "fields": [
-  {
-   "fieldname": "supervisort",
-   "fieldtype": "Link",
-   "label": "\u0627\u0644\u0645\u0634\u0631\u0641",
-   "options": "Supervisor"
-  },
   {
    "default": "Today",
    "fieldname": "date",
@@ -51,12 +45,18 @@
    "options": "Invoice Application",
    "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "supervisor",
+   "fieldtype": "Link",
+   "label": "\u0627\u0644\u0645\u0634\u0631\u0641",
+   "options": "Supervisor"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-01-31 16:40:30.651085",
+ "modified": "2022-02-12 16:37:40.991391",
  "modified_by": "Administrator",
  "module": "Me Group",
  "name": "Invoice Application",
