@@ -562,16 +562,11 @@ def uploadfile():
     frappe.local.uploaded_file = content
     frappe.local.uploaded_filename = filename
 
-    ret = frappe.get_doc({
-        "doctype": "File",
-        "attached_to_doctype": "",
-        "attached_to_name": "",
-        "attached_to_field": "",
-        "folder": folder,
-        "file_name": filename,
-        "file_url": "",
-        "is_private": cint(is_private),
-        "content": content
-    })
+    ret = frappe.new_doc("File")
+    ret.folder = folder
+    ret.file_name = filename
+    ret.content = content
+    ret.is_private = cint(is_private)
     ret.save(ignore_permissions=True)
+    frappe.db.commit()
     return ret
