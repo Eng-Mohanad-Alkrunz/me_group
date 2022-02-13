@@ -533,6 +533,12 @@ def get_invoices(**kwards):
         frappe.local.response['data'] = None
         return
 
+
+    if not frappe.db.exists("Contract Application",contract):
+        frappe.local.response['status'] = {"message": _("Contract Not Found"), "success": False, "code": 403}
+        frappe.local.response['data'] = None
+        return
+
     result = []
     invoices = frappe.get_all("Invoice Application",fields =["*"],filters= {"contract":contract})
     for invoice in invoices:
