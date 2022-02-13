@@ -227,13 +227,21 @@ def get_contract_status(**kwards):
     customer_status = 0
     approved_status = 0
     end_status = 0
-
+    agree = 0
+    disagree = 0
+    review = 0
     if contract.contract_status == "pending":
         pending_status = 1
     elif contract.contract_status == "approved by management":
         management_status = 1
     elif contract.contract_status == "approved by the customer":
         customer_status = 1
+        if contract.customer_response == "agree":
+            agree = 1
+        elif contract.customer_response == "disagree":
+            disagree = 1
+        else:
+            review = 1
     elif contract.contract_status == "final approved":
         approved_status = 1
     elif contract.contract_status == "end of the contract":
@@ -250,7 +258,10 @@ def get_contract_status(**kwards):
             "status": management_status
         },
         "approved by the customer": {
-            "status": customer_status
+            "status": customer_status,
+            "agree" :agree,
+            "disagree" : disagree,
+            "review" : review,
         },
         "final approved": {
             "status": approved_status
