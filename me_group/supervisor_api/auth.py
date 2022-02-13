@@ -118,7 +118,7 @@ def login(**kwards):
 
     frappe.local.response['status'] = {
         "message": _("Login Success"),
-        "code": 1,
+        "code": 200,
         "success": True
     }
 
