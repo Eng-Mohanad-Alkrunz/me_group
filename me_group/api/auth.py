@@ -401,6 +401,34 @@ def get_notifications():
 
 
 @frappe.whitelist(allow_guest=True)
+def update_notification(**kwards):
+    lang = "ar"
+    if frappe.get_request_header("Language"):
+        lang = frappe.get_request_header("Language")
+
+    frappe.local.lang = lang
+
+    check = check_token()
+    user1 = None
+    data = kwards
+    if check and "user" in check:
+        user1 = check['user']
+    else:
+        return
+    if not frappe.db.exists("Notification Me",data['id']):
+        frappe.local.response['status'] = {"message": _("Notification Not Found"), "success": False, "code": 403}
+        frappe.local.response['data'] = None
+        return
+    notification = frappe.get_doc("Notification Me",data['id'])
+    notification.status = "opened"
+    notification.save(ignore_permissions=True)
+    frappe.db.commit()
+
+    frappe.local.response['status'] = {"message": _("Notification Updated"), "success": True, "code": 200}
+    frappe.local.response['data'] = None
+
+
+@frappe.whitelist(allow_guest=True)
 def logout(**kwards):
     lang = "ar"
     if frappe.get_request_header("Language"):
