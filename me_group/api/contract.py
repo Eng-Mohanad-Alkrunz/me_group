@@ -13,9 +13,9 @@ from passlib.context import CryptContext
 from mimetypes import guess_type
 from frappe.utils import add_days, cint
 import json
-from fpdf import FPDF
-import arabic_reshaper
-from bidi.algorithm import get_display
+# from fpdf import FPDF
+# import arabic_reshaper
+# from bidi.algorithm import get_display
 
 
 ALLOWED_MIMETYPES = ('image/png', 'image/jpeg', 'application/pdf', 'application/msword',
@@ -333,123 +333,123 @@ def get_contract_details(**kwards):
     }
 
 
-@frappe.whitelist(allow_guest=True)
-def get_contract_copy(**kwards):
-    lang = "ar"
-    if frappe.get_request_header("Language"):
-        lang = frappe.get_request_header("Language")
-    frappe.local.lang = lang
-    data = kwards
-    id = None
-    if "id" in data:
-        id = data['id']
-    else:
-        frappe.local.response['status'] = {"message": _("ID Required"), "success": False, "code": 403}
-        frappe.local.response['data'] = None
-
-    check = check_token()
-    user1 = None
-    if check and "user" in check:
-        user1 = check['user']
-
-    contract = frappe.get_doc("Contract Application",id)
-    conditions = []
-
-    for condition in contract.conditions:
-        conditions.append({
-            "condition":condition.condition_details,
-            "check":_(condition.base_select)
-        })
-
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_margins(10,25,30)
-    pdf.add_font("Arial", "", "arial.ttf", uni=True)
-    pdf.set_font("Arial", size=15)
-    txt = arabic_reshaper.reshape("مؤسسة خلطة")
-    txt = txt[::-1]
-    # create a cell
-    pdf.cell(200, 10, txt,
-             ln=1, align='C')
-
-    # add another cell
-    txt = arabic_reshaper.reshape("عقد "
-                                  "مصنعية العظم"
-                                  ")"
-                                  "بدون مواد"
-                                  "(")
-    txt = txt[::-1]
-    pdf.cell(200, 20, txt,
-             ln=2, align='C')
-
-    txt = arabic_reshaper.reshape("أولاً / وثيقة العقد الأساسية")
-    txt = txt[::-1]
-    pdf.cell(200, 10, txt,
-             ln=2, align='R')
-
-    txt = arabic_reshaper.reshape("الحمد لله رب العالمين والصلاة والسلام على نبيه محمد صلى الله عليه وسلم")
-    txt = txt[::-1]
-    pdf.cell(200, 10, txt,
-             ln=2, align='R')
-
-    txt = arabic_reshaper.reshape("إنه في يوم"
-                                  " الثلاثاء الموافق 27-12-2022"
-                                  " تم الاتفاق في مدينة "
-                                  "غزة "
-                                  "بين كل من :")
-    txt = txt[::-1]
-    pdf.cell(200, 10, txt,
-             ln=2, align='R')
-
-    txt = arabic_reshaper.reshape("1 . السيد / "
-                                  "مهند الكرنز "
-                                  "بطاقة رقم "
-                                  "059994554 "
-                                  " مصدرها "
-                                  "الحكومة الفلسطينية "
-                                  "تاريخها "
-                                  "22-12-1888 "
-                                  )
-    txt = txt[::-1]
-    pdf.cell(200, 10, txt,
-             ln=2, align='R')
-
-    txt = arabic_reshaper.reshape("وهو المالك للأرض "
-                                  "ذات الصق رقم "
-                                  "112233 "
-                                  ""
-                                  )
-    txt = txt[::-1]
-    pdf.cell(200, 10, txt,
-             ln=2, align='R')
-    # save the pdf with name .pdf
-    pdf.output("GFG.pdf")
-
-    # frappe.local.response['status'] = {"message": _("Contract Details"), "success": True, "code": 200}
-    #
-    # frappe.local.response['data'] = {
-    #         "id" :contract.name,
-    #         "ID_no" :contract.id_no,
-    #         "id_release_date":contract.id_release_date,
-    #         "id_issuer":contract.id_issuer,
-    #         "id_image":contract.id_image,
-    #     "instrument_no":contract.instrument_no,
-    #     "instrument_date":contract.instrument_date,
-    #     "instrument_image":contract.instrument_image,
-    #     "license_no":contract.license_no,
-    #     "license_date":contract.license_date,
-    #     "license_image":contract.license_image,
-    #     "office_name":contract.office_name,
-    #     "engineer_name":contract.engineer_name,
-    #     "engineer_contact":contract.engineer_contact,
-    #     "diagrams":contract.diagrams,
-    #     "details":contract.details,
-    #     "customer_response":_(contract.customer_response),
-    #     "customer_note":contract.customer_note,
-    #     "price" : contract.price,
-    #     "contract_copy": contract.contract_copy,
-    #     "conditions":conditions
-    # }
+# @frappe.whitelist(allow_guest=True)
+# def get_contract_copy(**kwards):
+#     lang = "ar"
+#     if frappe.get_request_header("Language"):
+#         lang = frappe.get_request_header("Language")
+#     frappe.local.lang = lang
+#     data = kwards
+#     id = None
+#     if "id" in data:
+#         id = data['id']
+#     else:
+#         frappe.local.response['status'] = {"message": _("ID Required"), "success": False, "code": 403}
+#         frappe.local.response['data'] = None
+#
+#     check = check_token()
+#     user1 = None
+#     if check and "user" in check:
+#         user1 = check['user']
+#
+#     contract = frappe.get_doc("Contract Application",id)
+#     conditions = []
+#
+#     for condition in contract.conditions:
+#         conditions.append({
+#             "condition":condition.condition_details,
+#             "check":_(condition.base_select)
+#         })
+#
+#     pdf = FPDF()
+#     pdf.add_page()
+#     pdf.set_margins(10,25,30)
+#     pdf.add_font("Arial", "", "arial.ttf", uni=True)
+#     pdf.set_font("Arial", size=15)
+#     txt = arabic_reshaper.reshape("مؤسسة خلطة")
+#     txt = txt[::-1]
+#     # create a cell
+#     pdf.cell(200, 10, txt,
+#              ln=1, align='C')
+#
+#     # add another cell
+#     txt = arabic_reshaper.reshape("عقد "
+#                                   "مصنعية العظم"
+#                                   ")"
+#                                   "بدون مواد"
+#                                   "(")
+#     txt = txt[::-1]
+#     pdf.cell(200, 20, txt,
+#              ln=2, align='C')
+#
+#     txt = arabic_reshaper.reshape("أولاً / وثيقة العقد الأساسية")
+#     txt = txt[::-1]
+#     pdf.cell(200, 10, txt,
+#              ln=2, align='R')
+#
+#     txt = arabic_reshaper.reshape("الحمد لله رب العالمين والصلاة والسلام على نبيه محمد صلى الله عليه وسلم")
+#     txt = txt[::-1]
+#     pdf.cell(200, 10, txt,
+#              ln=2, align='R')
+#
+#     txt = arabic_reshaper.reshape("إنه في يوم"
+#                                   " الثلاثاء الموافق 27-12-2022"
+#                                   " تم الاتفاق في مدينة "
+#                                   "غزة "
+#                                   "بين كل من :")
+#     txt = txt[::-1]
+#     pdf.cell(200, 10, txt,
+#              ln=2, align='R')
+#
+#     txt = arabic_reshaper.reshape("1 . السيد / "
+#                                   "مهند الكرنز "
+#                                   "بطاقة رقم "
+#                                   "059994554 "
+#                                   " مصدرها "
+#                                   "الحكومة الفلسطينية "
+#                                   "تاريخها "
+#                                   "22-12-1888 "
+#                                   )
+#     txt = txt[::-1]
+#     pdf.cell(200, 10, txt,
+#              ln=2, align='R')
+#
+#     txt = arabic_reshaper.reshape("وهو المالك للأرض "
+#                                   "ذات الصق رقم "
+#                                   "112233 "
+#                                   ""
+#                                   )
+#     txt = txt[::-1]
+#     pdf.cell(200, 10, txt,
+#              ln=2, align='R')
+#     # save the pdf with name .pdf
+#     pdf.output("GFG.pdf")
+#
+#     # frappe.local.response['status'] = {"message": _("Contract Details"), "success": True, "code": 200}
+#     #
+#     # frappe.local.response['data'] = {
+#     #         "id" :contract.name,
+#     #         "ID_no" :contract.id_no,
+#     #         "id_release_date":contract.id_release_date,
+#     #         "id_issuer":contract.id_issuer,
+#     #         "id_image":contract.id_image,
+#     #     "instrument_no":contract.instrument_no,
+#     #     "instrument_date":contract.instrument_date,
+#     #     "instrument_image":contract.instrument_image,
+#     #     "license_no":contract.license_no,
+#     #     "license_date":contract.license_date,
+#     #     "license_image":contract.license_image,
+#     #     "office_name":contract.office_name,
+#     #     "engineer_name":contract.engineer_name,
+#     #     "engineer_contact":contract.engineer_contact,
+#     #     "diagrams":contract.diagrams,
+#     #     "details":contract.details,
+#     #     "customer_response":_(contract.customer_response),
+#     #     "customer_note":contract.customer_note,
+#     #     "price" : contract.price,
+#     #     "contract_copy": contract.contract_copy,
+#     #     "conditions":conditions
+#     # }
 
 
 @frappe.whitelist(allow_guest=True)
