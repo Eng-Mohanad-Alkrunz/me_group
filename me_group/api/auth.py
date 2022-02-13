@@ -363,6 +363,43 @@ def change_password(**kwards):
     }
     return
 
+
+@frappe.whitelist(allow_guest=True)
+def get_notifications():
+    lang = "ar"
+    if frappe.get_request_header("Language"):
+        lang = frappe.get_request_header("Language")
+
+    frappe.local.lang = lang
+
+    check = check_token()
+    user1 = None
+
+    if check and "user" in check:
+        user1 = check['user']
+    else:
+        return
+
+    result =[]
+    notifications = frappe.get_all("Notification Me",fields=["*"],filters = {"reference":user1.name},order_by="modified desc")
+
+    for notification in notifications:
+        result.append({
+            "id":notification.name,
+            "type":notification.type,
+            "text": notification.text,
+            "status": notification.status,
+            "doc_type": notification.doc_type,
+            "doc_reference": notification.doc_reference
+        })
+
+
+
+    frappe.local.response['status'] = {"message": _("Notifications"), "success": True,
+                                       "code": 200}
+    frappe.local.response['data'] = result
+
+
 @frappe.whitelist(allow_guest=True)
 def logout(**kwards):
     lang = "ar"

@@ -153,6 +153,8 @@ def get_about_us():
     frappe.local.response['data'] = result
 
 
+
+
 @frappe.whitelist(allow_guest=True)
 def contact_us(**kwards):
     lang = "ar"
