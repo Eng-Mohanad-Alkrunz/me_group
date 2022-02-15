@@ -485,7 +485,8 @@ def update_customer_status(**kwards):
 
     frappe.local.response['status'] = {"message": _("contract updated successful"), "success": True, "code": 200}
 
-    frappe.local.response['data'] = None
+    frappe.local.response['data'] = {
+        "response" : response}
 
 
 @frappe.whitelist(allow_guest=True)
