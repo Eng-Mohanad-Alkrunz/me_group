@@ -390,7 +390,8 @@ def get_notifications():
             "text": notification.text,
             "status": notification.status,
             "doc_type": notification.doc_type,
-            "doc_reference": notification.doc_reference
+            "doc_reference": notification.doc_reference,
+            "date":notification.modified
         })
 
 
