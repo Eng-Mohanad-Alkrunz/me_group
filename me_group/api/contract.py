@@ -580,6 +580,54 @@ def get_contract_financial(**kwards):
     frappe.local.response['data'] = result
 
 
+# @frappe.whitelist(allow_guest=True)
+# def get_management_works(**kwards):
+#     lang = "ar"
+#     if frappe.get_request_header("Language"):
+#         lang = frappe.get_request_header("Language")
+#
+#     frappe.local.lang = lang
+#     data = kwards
+#
+#     check = check_token()
+#     user1 = None
+#     contract = None
+#     if check and "user" in check:
+#         user1 = check['user']
+#
+#     if "contract" in data:
+#         contract = data['contract']
+#
+#     if not user1:
+#         frappe.local.response['http_status_code'] = 403
+#         frappe.local.response['status'] = {"message": _("Not Authorized"), "success": False, "code": 403}
+#         frappe.local.response['data'] = None
+#         return
+#
+#
+#     result = []
+#     works = []
+#     if contract is not None and contract != "":
+#         works = frappe.get_all("Work Management Application", fields=["*"], filters={"customer": user1.name,"contract": ['like', "%" + contract + "%"]})
+#     else:
+#         works = frappe.get_all("Work Management Application", fields=["*"], filters={"customer": user1.name})
+#
+#
+#     for work in works:
+#         work_doc = frappe.get_doc("Work Management Application",work.name)
+#         result.append({
+#             "id":work.name,
+#             "contract":work.contract,
+#             "date":work.date,
+#             "supervisor" :work.supervisor,
+#             "work": work.work,
+#             "email": work.email,
+#         })
+#
+#
+#     frappe.local.response['status'] = {"message": _("Works list "), "success": True, "code": 200}
+#     frappe.local.response['data'] = result
+
 @frappe.whitelist(allow_guest=True)
 def get_management_works(**kwards):
     lang = "ar"
@@ -595,38 +643,41 @@ def get_management_works(**kwards):
     if check and "user" in check:
         user1 = check['user']
 
-    if "contract" in data:
-        contract = data['contract']
-
     if not user1:
         frappe.local.response['http_status_code'] = 403
         frappe.local.response['status'] = {"message": _("Not Authorized"), "success": False, "code": 403}
         frappe.local.response['data'] = None
         return
 
+    if "contract" in data:
+        contract = data['contract']
+    else:
+        frappe.local.response['status'] = {"message": _("contract id required"), "success": False, "code": 403}
+        frappe.local.response['data'] = None
+        return
 
     result = []
-    works = []
-    if contract is not None and contract != "":
-        works = frappe.get_all("Work Management Application", fields=["*"], filters={"customer": user1.name,"contract": ['like', "%" + contract + "%"]})
-    else:
-        works = frappe.get_all("Work Management Application", fields=["*"], filters={"customer": user1.name})
-
-
+    works = frappe.get_all("Work Application",fields =["*"],filters= {"contract":contract})
     for work in works:
-        work_doc = frappe.get_doc("Work Management Application",work.name)
+        work_doc = frappe.get_doc("Work Application",work.name)
+        images = []
+        if work_doc.images is not None:
+            for image in work_doc.images:
+                images.append({
+                    "image" : image.images
+                })
         result.append({
             "id":work.name,
             "contract":work.contract,
             "date":work.date,
-            "supervisor" :work.supervisor,
-            "work": work.work,
-            "email": work.email,
+            "status" :_(work.status),
+            "images" : images
         })
 
 
     frappe.local.response['status'] = {"message": _("Works list "), "success": True, "code": 200}
     frappe.local.response['data'] = result
+
 
 
 @frappe.whitelist(allow_guest=True)
