@@ -668,6 +668,7 @@ def get_management_works(**kwards):
                 })
         result.append({
             "id":work.name,
+            "work_name":work.work_name,
             "contract":work.contract,
             "date":work.date,
             "status" :_(work.status),
